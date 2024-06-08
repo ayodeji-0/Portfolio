@@ -1,0 +1,1162 @@
+[p GLOBOPT AUTOSTATIC IEEE_FLT IEEE_DBL LFSROK EMI_WORD ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 18F67K40 ]
+[d frameptr 4065 ]
+"8 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/dc_motor.h
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"5 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\breakup.c
+[v _mLinit mLinit `(S276  1 e 8 0 ]
+"8 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/dc_motor.h
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"18 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\breakup.c
+[v _mRinit mRinit `(S276  1 e 8 0 ]
+"1 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\abs.c
+[v _abs abs `(i  1 e 2 0 ]
+"7 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\aldiv.c
+[v ___aldiv __aldiv `(l  1 e 4 0 ]
+"7 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+"4 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\fleq.c
+[v ___fleq __fleq `(b  1 e 0 0 ]
+"62 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\float.c
+[v ___ftpack __ftpack `(f  1 e 4 0 ]
+"86 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\ftadd.c
+[v ___ftadd __ftadd `(f  1 e 4 0 ]
+"54 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\ftdiv.c
+[v ___ftdiv __ftdiv `(f  1 e 4 0 ]
+"62 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\ftmul.c
+[v ___ftmul __ftmul `(f  1 e 4 0 ]
+"19 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\ftsub.c
+[v ___ftsub __ftsub `(f  1 e 4 0 ]
+"9 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\nf_sprintf.c
+[v _sprintf sprintf `(i  1 e 2 0 ]
+"10 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\sprcadd.c
+[v ___fladd __fladd `(d  1 e 4 0 ]
+"245
+[v ___flsub __flsub `(d  1 e 4 0 ]
+"11 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\sprcdiv.c
+[v ___fldiv __fldiv `(d  1 e 4 0 ]
+"8 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\sprcmul.c
+[v ___flmul __flmul `(d  1 e 4 0 ]
+"15 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\Umul16.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+"15 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+"91 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\Umul64.c
+[v ___omul __omul `(uo  1 e 8 0 ]
+"10 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _color_click_init color_click_init `(v  1 e 1 0 ]
+"28
+[v _triLED_tog triLED_tog `(v  1 e 1 0 ]
+"39
+[v _color_writetoaddr color_writetoaddr `(v  1 e 1 0 ]
+"47
+[v _color_read_all color_read_all `(v  1 e 1 0 ]
+"75
+[v _initCalibColors initCalibColors `(v  1 e 1 0 ]
+"115
+[v _RGBC2color RGBC2color `(v  1 e 1 0 ]
+"44 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/color.h
+[s S24 color 27 `uc 1 name 1 0 `l 1 red 4 1 `l 1 green 4 5 `l 1 blue 4 9 `l 1 clear 4 13 `i 1 direction 2 17 `i 1 angle 2 19 `i 1 polarity 2 21 `i 1 squares 2 23 `i 1 intensity 2 25 ]
+"127 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _checkColor checkColor `(S24  1 e 27 0 ]
+"182
+[v _checkIncidence checkIncidence `(v  1 e 1 0 ]
+"197
+[v _checkWhite checkWhite `(v  1 e 1 0 ]
+"212
+[v _color2instruction color2instruction `(v  1 e 1 0 ]
+"273
+[v _storeSequence storeSequence `(v  1 e 1 0 ]
+"287
+[v _processSequence processSequence `(v  1 e 1 0 ]
+"300
+[v _useSequence useSequence `(v  1 e 1 0 ]
+"319
+[v _away away `(v  1 e 1 0 ]
+"328
+[v _home home `(v  1 e 1 0 ]
+"6 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\dc_motor.c
+[v _initDCmotorsPWM initDCmotorsPWM `(v  1 e 1 0 ]
+"80
+[v _setMotorPWM setMotorPWM `(v  1 e 1 0 ]
+"103
+[v _stop stop `(v  1 e 1 0 ]
+"125
+[v _turnLeft turnLeft `(v  1 e 1 0 ]
+"165
+[v _turnRight turnRight `(v  1 e 1 0 ]
+"205
+[v _goStraight goStraight `(v  1 e 1 0 ]
+"248
+[v _bump bump `(v  1 e 1 0 ]
+"282
+[v _turn turn `(v  1 e 1 0 ]
+"4 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\i2c.c
+[v _I2C_2_Master_Init I2C_2_Master_Init `(v  1 e 1 0 ]
+"22
+[v _I2C_2_Master_Idle I2C_2_Master_Idle `(v  1 e 1 0 ]
+"27
+[v _I2C_2_Master_Start I2C_2_Master_Start `(v  1 e 1 0 ]
+"33
+[v _I2C_2_Master_RepStart I2C_2_Master_RepStart `(v  1 e 1 0 ]
+"39
+[v _I2C_2_Master_Stop I2C_2_Master_Stop `(v  1 e 1 0 ]
+"45
+[v _I2C_2_Master_Write I2C_2_Master_Write `(v  1 e 1 0 ]
+"51
+[v _I2C_2_Master_Read I2C_2_Master_Read `(uc  1 e 1 0 ]
+"10 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\interrupts.c
+[v _Interrupts_init Interrupts_init `(v  1 e 1 0 ]
+"28
+[v _HighISR HighISR `IIH(v  1 e 1 0 ]
+"27 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\main.c
+[v _main main `(v  1 e 1 0 ]
+"5 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\serial.c
+[v _initUSART4 initUSART4 `(v  1 e 1 0 ]
+"33
+[v _sendCharSerial4 sendCharSerial4 `(v  1 e 1 0 ]
+"39
+[v _sendStringSerial4 sendStringSerial4 `(v  1 e 1 0 ]
+"76
+[v _getCharFromTxBuf getCharFromTxBuf `(uc  1 e 1 0 ]
+"82
+[v _putCharToTxBuf putCharToTxBuf `(v  1 e 1 0 ]
+"90
+[v _isDataInTxBuf isDataInTxBuf `(uc  1 e 1 0 ]
+"110
+[v _sendTxBuf sendTxBuf `(v  1 e 1 0 ]
+[s S24 color 27 `uc 1 name 1 0 `l 1 red 4 1 `l 1 green 4 5 `l 1 blue 4 9 `l 1 clear 4 13 `i 1 direction 2 17 `i 1 angle 2 19 `i 1 polarity 2 21 `i 1 squares 2 23 `i 1 intensity 2 25 ]
+"74 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/color.h
+[v _red red `S24  1 e 27 0 ]
+"75
+[v _green green `S24  1 e 27 0 ]
+"76
+[v _blue blue `S24  1 e 27 0 ]
+"77
+[v _yellow yellow `S24  1 e 27 0 ]
+"78
+[v _pink pink `S24  1 e 27 0 ]
+"79
+[v _orange orange `S24  1 e 27 0 ]
+"80
+[v _lightBlue lightBlue `S24  1 e 27 0 ]
+"81
+[v _whiteC whiteC `S24  1 e 27 0 ]
+"82
+[v _blackC blackC `S24  1 e 27 0 ]
+"85
+[v _calibColors calibColors `[9]S24  1 e 243 0 ]
+"14 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/serial.h
+[v _EUSART4RXbuf EUSART4RXbuf `VE[20]uc  1 e 20 0 ]
+"15
+[v _RxBufWriteCnt RxBufWriteCnt `VEuc  1 e 1 0 ]
+"16
+[v _RxBufReadCnt RxBufReadCnt `VEuc  1 e 1 0 ]
+"18
+[v _EUSART4TXbuf EUSART4TXbuf `VE[60]uc  1 e 60 0 ]
+"19
+[v _TxBufWriteCnt TxBufWriteCnt `VEuc  1 e 1 0 ]
+"20
+[v _TxBufReadCnt TxBufReadCnt `VEuc  1 e 1 0 ]
+"3182 C:/Program Files/Microchip/MPLABX/v6.15/packs/Microchip/PIC18F-K_DFP/1.11.281/xc8\pic\include\proc\pic18f67k40.h
+[v _RX4PPS RX4PPS `VEuc  1 e 1 @3605 ]
+"3796
+[v _SSP2CLKPPS SSP2CLKPPS `VEuc  1 e 1 @3612 ]
+"3862
+[v _SSP2DATPPS SSP2DATPPS `VEuc  1 e 1 @3613 ]
+[s S1857 . 1 `uc 1 TX3IE 1 0 :1:0 
+`uc 1 RC3IE 1 0 :1:1 
+`uc 1 TX4IE 1 0 :1:2 
+`uc 1 RC4IE 1 0 :1:3 
+`uc 1 TX5IE 1 0 :1:4 
+`uc 1 RC5IE 1 0 :1:5 
+]
+"4819
+[u S1864 . 1 `S1857 1 . 1 0 ]
+[v _PIE4bits PIE4bits `VES1864  1 e 1 @3629 ]
+[s S1834 . 1 `uc 1 TX3IF 1 0 :1:0 
+`uc 1 RC3IF 1 0 :1:1 
+`uc 1 TX4IF 1 0 :1:2 
+`uc 1 RC4IF 1 0 :1:3 
+`uc 1 TX5IF 1 0 :1:4 
+`uc 1 RC5IF 1 0 :1:5 
+]
+"5332
+[u S1841 . 1 `S1834 1 . 1 0 ]
+[v _PIR4bits PIR4bits `VES1841  1 e 1 @3639 ]
+"7858
+[v _RC0PPS RC0PPS `VEuc  1 e 1 @3682 ]
+"8208
+[v _RC7PPS RC7PPS `VEuc  1 e 1 @3689 ]
+"8508
+[v _RD5PPS RD5PPS `VEuc  1 e 1 @3695 ]
+"8558
+[v _RD6PPS RD6PPS `VEuc  1 e 1 @3696 ]
+"8758
+[v _RE2PPS RE2PPS `VEuc  1 e 1 @3700 ]
+"8858
+[v _RE4PPS RE4PPS `VEuc  1 e 1 @3702 ]
+"9708
+[v _RG6PPS RG6PPS `VEuc  1 e 1 @3720 ]
+[s S2144 . 1 `uc 1 ANSELD0 1 0 :1:0 
+`uc 1 ANSELD1 1 0 :1:1 
+`uc 1 ANSELD2 1 0 :1:2 
+`uc 1 ANSELD3 1 0 :1:3 
+`uc 1 ANSELD4 1 0 :1:4 
+`uc 1 ANSELD5 1 0 :1:5 
+`uc 1 ANSELD6 1 0 :1:6 
+`uc 1 ANSELD7 1 0 :1:7 
+]
+"11513
+[u S2153 . 1 `S2144 1 . 1 0 ]
+[v _ANSELDbits ANSELDbits `VES2153  1 e 1 @3751 ]
+"14100
+[v _SSP2BUF SSP2BUF `VEuc  1 e 1 @3797 ]
+"14120
+[v _SSP2ADD SSP2ADD `VEuc  1 e 1 @3798 ]
+"14310
+[v _SSP2STAT SSP2STAT `VEuc  1 e 1 @3800 ]
+[s S2086 . 1 `uc 1 SSPM 1 0 :4:0 
+`uc 1 CKP 1 0 :1:4 
+`uc 1 SSPEN 1 0 :1:5 
+`uc 1 SSPOV 1 0 :1:6 
+`uc 1 WCOL 1 0 :1:7 
+]
+"14794
+[s S2092 . 1 `uc 1 SSPM0 1 0 :1:0 
+`uc 1 SSPM1 1 0 :1:1 
+`uc 1 SSPM2 1 0 :1:2 
+`uc 1 SSPM3 1 0 :1:3 
+]
+[s S2097 . 1 `uc 1 SSPM02 1 0 :1:0 
+`uc 1 SSPM12 1 0 :1:1 
+`uc 1 SSPM22 1 0 :1:2 
+`uc 1 SSPM32 1 0 :1:3 
+`uc 1 CKP2 1 0 :1:4 
+`uc 1 SSPEN2 1 0 :1:5 
+`uc 1 SSPOV2 1 0 :1:6 
+`uc 1 WCOL2 1 0 :1:7 
+]
+[u S2106 . 1 `S2086 1 . 1 0 `S2092 1 . 1 0 `S2097 1 . 1 0 ]
+[v _SSP2CON1bits SSP2CON1bits `VES2106  1 e 1 @3801 ]
+"14884
+[v _SSP2CON2 SSP2CON2 `VEuc  1 e 1 @3802 ]
+[s S2171 . 1 `uc 1 SEN 1 0 :1:0 
+`uc 1 RSEN 1 0 :1:1 
+`uc 1 PEN 1 0 :1:2 
+`uc 1 RCEN 1 0 :1:3 
+`uc 1 ACKEN 1 0 :1:4 
+`uc 1 ACKDT 1 0 :1:5 
+`uc 1 ACKSTAT 1 0 :1:6 
+`uc 1 GCEN 1 0 :1:7 
+]
+"14931
+[s S2180 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 ADMSK 1 0 :5:1 
+]
+[s S2183 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 ADMSK1 1 0 :1:1 
+`uc 1 ADMSK2 1 0 :1:2 
+`uc 1 ADMSK3 1 0 :1:3 
+`uc 1 ADMSK4 1 0 :1:4 
+`uc 1 ADMSK5 1 0 :1:5 
+]
+[s S2190 . 1 `uc 1 SEN2 1 0 :1:0 
+`uc 1 ADMSK12 1 0 :1:1 
+`uc 1 ADMSK22 1 0 :1:2 
+`uc 1 ADMSK32 1 0 :1:3 
+`uc 1 ACKEN2 1 0 :1:4 
+`uc 1 ACKDT2 1 0 :1:5 
+`uc 1 ACKSTAT2 1 0 :1:6 
+`uc 1 GCEN2 1 0 :1:7 
+]
+[s S2199 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 RSEN2 1 0 :1:1 
+`uc 1 PEN2 1 0 :1:2 
+`uc 1 RCEN2 1 0 :1:3 
+`uc 1 ADMSK42 1 0 :1:4 
+`uc 1 ADMSK52 1 0 :1:5 
+]
+[u S2206 . 1 `S2171 1 . 1 0 `S2180 1 . 1 0 `S2183 1 . 1 0 `S2190 1 . 1 0 `S2199 1 . 1 0 ]
+[v _SSP2CON2bits SSP2CON2bits `VES2206  1 e 1 @3802 ]
+"15686
+[v _RC4REG RC4REG `VEuc  1 e 1 @3811 ]
+"15724
+[v _TX4REG TX4REG `VEuc  1 e 1 @3812 ]
+"15769
+[v _SP4BRGL SP4BRGL `VEuc  1 e 1 @3813 ]
+"15807
+[v _SP4BRGH SP4BRGH `VEuc  1 e 1 @3814 ]
+[s S1813 . 1 `uc 1 RX9D 1 0 :1:0 
+`uc 1 OERR 1 0 :1:1 
+`uc 1 FERR 1 0 :1:2 
+`uc 1 ADDEN 1 0 :1:3 
+`uc 1 CREN 1 0 :1:4 
+`uc 1 SREN 1 0 :1:5 
+`uc 1 RX9 1 0 :1:6 
+`uc 1 SPEN 1 0 :1:7 
+]
+"15867
+[u S1822 . 1 `S1813 1 . 1 0 ]
+[v _RC4STAbits RC4STAbits `VES1822  1 e 1 @3815 ]
+[s S1790 . 1 `uc 1 TX9D 1 0 :1:0 
+`uc 1 TRMT 1 0 :1:1 
+`uc 1 BRGH 1 0 :1:2 
+`uc 1 SENDB 1 0 :1:3 
+`uc 1 SYNC 1 0 :1:4 
+`uc 1 TXEN 1 0 :1:5 
+`uc 1 TX9 1 0 :1:6 
+`uc 1 CSRC 1 0 :1:7 
+]
+"15989
+[u S1799 . 1 `S1790 1 . 1 0 ]
+[v _TX4STAbits TX4STAbits `VES1799  1 e 1 @3816 ]
+[s S1769 . 1 `uc 1 ABDEN 1 0 :1:0 
+`uc 1 WUE 1 0 :1:1 
+`uc 1 . 1 0 :1:2 
+`uc 1 BRG16 1 0 :1:3 
+`uc 1 SCKP 1 0 :1:4 
+`uc 1 . 1 0 :1:5 
+`uc 1 RCIDL 1 0 :1:6 
+`uc 1 ABDOVF 1 0 :1:7 
+]
+"16115
+[u S1778 . 1 `S1769 1 . 1 0 ]
+[v _BAUD4CONbits BAUD4CONbits `VES1778  1 e 1 @3817 ]
+"20738
+[v _CCPR4H CCPR4H `VEuc  1 e 1 @3873 ]
+[s S1395 . 1 `uc 1 MODE 1 0 :4:0 
+`uc 1 FMT 1 0 :1:4 
+`uc 1 OUT 1 0 :1:5 
+`uc 1 OE 1 0 :1:6 
+`uc 1 EN 1 0 :1:7 
+]
+"20791
+[s S1294 . 1 `uc 1 MODE0 1 0 :1:0 
+`uc 1 MODE1 1 0 :1:1 
+`uc 1 MODE2 1 0 :1:2 
+`uc 1 MODE3 1 0 :1:3 
+]
+[s S1456 . 1 `uc 1 CCP4MODE 1 0 :4:0 
+`uc 1 CCP4FMT 1 0 :1:4 
+`uc 1 CCP4OUT 1 0 :1:5 
+`uc 1 CCP4OE 1 0 :1:6 
+`uc 1 CCP4EN 1 0 :1:7 
+]
+[s S1462 . 1 `uc 1 CCP4MODE0 1 0 :1:0 
+`uc 1 CCP4MODE1 1 0 :1:1 
+`uc 1 CCP4MODE2 1 0 :1:2 
+`uc 1 CCP4MODE3 1 0 :1:3 
+]
+[u S1467 . 1 `S1395 1 . 1 0 `S1294 1 . 1 0 `S1456 1 . 1 0 `S1462 1 . 1 0 ]
+[v _CCP4CONbits CCP4CONbits `VES1467  1 e 1 @3874 ]
+"21041
+[v _CCPR3H CCPR3H `VEuc  1 e 1 @3877 ]
+"21094
+[s S1406 . 1 `uc 1 CCP3MODE 1 0 :4:0 
+`uc 1 CCP3FMT 1 0 :1:4 
+`uc 1 CCP3OUT 1 0 :1:5 
+`uc 1 CCP3OE 1 0 :1:6 
+`uc 1 CCP3EN 1 0 :1:7 
+]
+[s S1412 . 1 `uc 1 CCP3MODE0 1 0 :1:0 
+`uc 1 CCP3MODE1 1 0 :1:1 
+`uc 1 CCP3MODE2 1 0 :1:2 
+`uc 1 CCP3MODE3 1 0 :1:3 
+]
+[u S1417 . 1 `S1395 1 . 1 0 `S1294 1 . 1 0 `S1406 1 . 1 0 `S1412 1 . 1 0 ]
+[v _CCP3CONbits CCP3CONbits `VES1417  1 e 1 @3878 ]
+[s S188 . 1 `uc 1 LATA0 1 0 :1:0 
+`uc 1 LATA1 1 0 :1:1 
+`uc 1 LATA2 1 0 :1:2 
+`uc 1 LATA3 1 0 :1:3 
+`uc 1 LATA4 1 0 :1:4 
+`uc 1 LATA5 1 0 :1:5 
+`uc 1 LATA6 1 0 :1:6 
+`uc 1 LATA7 1 0 :1:7 
+]
+"28172
+[s S197 . 1 `uc 1 LA0 1 0 :1:0 
+`uc 1 LA1 1 0 :1:1 
+`uc 1 LA2 1 0 :1:2 
+`uc 1 LA3 1 0 :1:3 
+`uc 1 LA4 1 0 :1:4 
+`uc 1 LA5 1 0 :1:5 
+`uc 1 LA6 1 0 :1:6 
+`uc 1 LA7 1 0 :1:7 
+]
+[u S206 . 1 `S188 1 . 1 0 `S197 1 . 1 0 ]
+[v _LATAbits LATAbits `VES206  1 e 1 @3961 ]
+[s S1003 . 1 `uc 1 LATC0 1 0 :1:0 
+`uc 1 LATC1 1 0 :1:1 
+`uc 1 LATC2 1 0 :1:2 
+`uc 1 LATC3 1 0 :1:3 
+`uc 1 LATC4 1 0 :1:4 
+`uc 1 LATC5 1 0 :1:5 
+`uc 1 LATC6 1 0 :1:6 
+`uc 1 LATC7 1 0 :1:7 
+]
+"28396
+[s S1012 . 1 `uc 1 LC0 1 0 :1:0 
+`uc 1 LC1 1 0 :1:1 
+`uc 1 LC2 1 0 :1:2 
+`uc 1 LC3 1 0 :1:3 
+`uc 1 LC4 1 0 :1:4 
+`uc 1 LC5 1 0 :1:5 
+`uc 1 LC6 1 0 :1:6 
+`uc 1 LC7 1 0 :1:7 
+]
+[u S1021 . 1 `S1003 1 . 1 0 `S1012 1 . 1 0 ]
+[v _LATCbits LATCbits `VES1021  1 e 1 @3963 ]
+[s S794 . 1 `uc 1 LATD0 1 0 :1:0 
+`uc 1 LATD1 1 0 :1:1 
+`uc 1 LATD2 1 0 :1:2 
+`uc 1 LATD3 1 0 :1:3 
+`uc 1 LATD4 1 0 :1:4 
+`uc 1 LATD5 1 0 :1:5 
+`uc 1 LATD6 1 0 :1:6 
+`uc 1 LATD7 1 0 :1:7 
+]
+"28508
+[s S803 . 1 `uc 1 LD0 1 0 :1:0 
+`uc 1 LD1 1 0 :1:1 
+`uc 1 LD2 1 0 :1:2 
+`uc 1 LD3 1 0 :1:3 
+`uc 1 LD4 1 0 :1:4 
+`uc 1 LD5 1 0 :1:5 
+`uc 1 LD6 1 0 :1:6 
+`uc 1 LD7 1 0 :1:7 
+]
+[u S812 . 1 `S794 1 . 1 0 `S803 1 . 1 0 ]
+[v _LATDbits LATDbits `VES812  1 e 1 @3964 ]
+[s S148 . 1 `uc 1 LATE0 1 0 :1:0 
+`uc 1 LATE1 1 0 :1:1 
+`uc 1 LATE2 1 0 :1:2 
+`uc 1 LATE3 1 0 :1:3 
+`uc 1 LATE4 1 0 :1:4 
+`uc 1 LATE5 1 0 :1:5 
+`uc 1 LATE6 1 0 :1:6 
+`uc 1 LATE7 1 0 :1:7 
+]
+"28620
+[s S157 . 1 `uc 1 LE0 1 0 :1:0 
+`uc 1 LE1 1 0 :1:1 
+`uc 1 LE2 1 0 :1:2 
+`uc 1 LE3 1 0 :1:3 
+`uc 1 LE4 1 0 :1:4 
+`uc 1 LE5 1 0 :1:5 
+`uc 1 LE6 1 0 :1:6 
+`uc 1 LE7 1 0 :1:7 
+]
+[u S166 . 1 `S148 1 . 1 0 `S157 1 . 1 0 ]
+[v _LATEbits LATEbits `VES166  1 e 1 @3965 ]
+[s S920 . 1 `uc 1 LATF0 1 0 :1:0 
+`uc 1 LATF1 1 0 :1:1 
+`uc 1 LATF2 1 0 :1:2 
+`uc 1 LATF3 1 0 :1:3 
+`uc 1 LATF4 1 0 :1:4 
+`uc 1 LATF5 1 0 :1:5 
+`uc 1 LATF6 1 0 :1:6 
+`uc 1 LATF7 1 0 :1:7 
+]
+"28732
+[s S929 . 1 `uc 1 LF0 1 0 :1:0 
+`uc 1 LF1 1 0 :1:1 
+`uc 1 LF2 1 0 :1:2 
+`uc 1 LF3 1 0 :1:3 
+`uc 1 LF4 1 0 :1:4 
+`uc 1 LF5 1 0 :1:5 
+`uc 1 LF6 1 0 :1:6 
+`uc 1 LF7 1 0 :1:7 
+]
+[u S938 . 1 `S920 1 . 1 0 `S929 1 . 1 0 ]
+[v _LATFbits LATFbits `VES938  1 e 1 @3966 ]
+[s S114 . 1 `uc 1 LATG0 1 0 :1:0 
+`uc 1 LATG1 1 0 :1:1 
+`uc 1 LATG2 1 0 :1:2 
+`uc 1 LATG3 1 0 :1:3 
+`uc 1 LATG4 1 0 :1:4 
+`uc 1 . 1 0 :1:5 
+`uc 1 LATG6 1 0 :1:6 
+`uc 1 LATG7 1 0 :1:7 
+]
+"28841
+[s S123 . 1 `uc 1 LG0 1 0 :1:0 
+`uc 1 LG1 1 0 :1:1 
+`uc 1 LG2 1 0 :1:2 
+`uc 1 LG3 1 0 :1:3 
+`uc 1 LG4 1 0 :1:4 
+]
+[u S129 . 1 `S114 1 . 1 0 `S123 1 . 1 0 ]
+[v _LATGbits LATGbits `VES129  1 e 1 @3967 ]
+[s S855 . 1 `uc 1 LATH0 1 0 :1:0 
+`uc 1 LATH1 1 0 :1:1 
+`uc 1 LATH2 1 0 :1:2 
+`uc 1 LATH3 1 0 :1:3 
+]
+"28941
+[s S860 . 1 `uc 1 LH0 1 0 :1:0 
+`uc 1 LH1 1 0 :1:1 
+`uc 1 LH2 1 0 :1:2 
+`uc 1 LH3 1 0 :1:3 
+]
+[s S865 . 1 `uc 1 . 1 0 :4:0 
+`uc 1 LH4 1 0 :1:4 
+]
+[s S868 . 1 `uc 1 . 1 0 :5:0 
+`uc 1 LH5 1 0 :1:5 
+]
+[s S871 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 LH6 1 0 :1:6 
+]
+[s S874 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 LH7 1 0 :1:7 
+]
+[u S877 . 1 `S855 1 . 1 0 `S860 1 . 1 0 `S865 1 . 1 0 `S868 1 . 1 0 `S871 1 . 1 0 `S874 1 . 1 0 ]
+[v _LATHbits LATHbits `VES877  1 e 1 @3968 ]
+[s S93 . 1 `uc 1 TRISA0 1 0 :1:0 
+`uc 1 TRISA1 1 0 :1:1 
+`uc 1 TRISA2 1 0 :1:2 
+`uc 1 TRISA3 1 0 :1:3 
+`uc 1 TRISA4 1 0 :1:4 
+`uc 1 TRISA5 1 0 :1:5 
+`uc 1 TRISA6 1 0 :1:6 
+`uc 1 TRISA7 1 0 :1:7 
+]
+"29028
+[u S102 . 1 `S93 1 . 1 0 ]
+[v _TRISAbits TRISAbits `VES102  1 e 1 @3969 ]
+[s S1074 . 1 `uc 1 TRISC0 1 0 :1:0 
+`uc 1 TRISC1 1 0 :1:1 
+`uc 1 TRISC2 1 0 :1:2 
+`uc 1 TRISC3 1 0 :1:3 
+`uc 1 TRISC4 1 0 :1:4 
+`uc 1 TRISC5 1 0 :1:5 
+`uc 1 TRISC6 1 0 :1:6 
+`uc 1 TRISC7 1 0 :1:7 
+]
+"29272
+[u S1083 . 1 `S1074 1 . 1 0 ]
+[v _TRISCbits TRISCbits `VES1083  1 e 1 @3971 ]
+[s S834 . 1 `uc 1 TRISD0 1 0 :1:0 
+`uc 1 TRISD1 1 0 :1:1 
+`uc 1 TRISD2 1 0 :1:2 
+`uc 1 TRISD3 1 0 :1:3 
+`uc 1 TRISD4 1 0 :1:4 
+`uc 1 TRISD5 1 0 :1:5 
+`uc 1 TRISD6 1 0 :1:6 
+`uc 1 TRISD7 1 0 :1:7 
+]
+"29394
+[u S843 . 1 `S834 1 . 1 0 ]
+[v _TRISDbits TRISDbits `VES843  1 e 1 @3972 ]
+[s S72 . 1 `uc 1 TRISE0 1 0 :1:0 
+`uc 1 TRISE1 1 0 :1:1 
+`uc 1 TRISE2 1 0 :1:2 
+`uc 1 TRISE3 1 0 :1:3 
+`uc 1 TRISE4 1 0 :1:4 
+`uc 1 TRISE5 1 0 :1:5 
+`uc 1 TRISE6 1 0 :1:6 
+`uc 1 TRISE7 1 0 :1:7 
+]
+"29516
+[u S81 . 1 `S72 1 . 1 0 ]
+[v _TRISEbits TRISEbits `VES81  1 e 1 @3973 ]
+[s S960 . 1 `uc 1 TRISF0 1 0 :1:0 
+`uc 1 TRISF1 1 0 :1:1 
+`uc 1 TRISF2 1 0 :1:2 
+`uc 1 TRISF3 1 0 :1:3 
+`uc 1 TRISF4 1 0 :1:4 
+`uc 1 TRISF5 1 0 :1:5 
+`uc 1 TRISF6 1 0 :1:6 
+`uc 1 TRISF7 1 0 :1:7 
+]
+"29633
+[u S969 . 1 `S960 1 . 1 0 ]
+[v _TRISFbits TRISFbits `VES969  1 e 1 @3974 ]
+[s S51 . 1 `uc 1 TRISG0 1 0 :1:0 
+`uc 1 TRISG1 1 0 :1:1 
+`uc 1 TRISG2 1 0 :1:2 
+`uc 1 TRISG3 1 0 :1:3 
+`uc 1 TRISG4 1 0 :1:4 
+`uc 1 . 1 0 :1:5 
+`uc 1 TRISG6 1 0 :1:6 
+`uc 1 TRISG7 1 0 :1:7 
+]
+"29695
+[u S60 . 1 `S51 1 . 1 0 ]
+[v _TRISGbits TRISGbits `VES60  1 e 1 @3975 ]
+[s S907 . 1 `uc 1 TRISH0 1 0 :1:0 
+`uc 1 TRISH1 1 0 :1:1 
+`uc 1 TRISH2 1 0 :1:2 
+`uc 1 TRISH3 1 0 :1:3 
+]
+"29748
+[u S912 . 1 `S907 1 . 1 0 ]
+[v _TRISHbits TRISHbits `VES912  1 e 1 @3976 ]
+"33876
+[v _CCPR2H CCPR2H `VEuc  1 e 1 @4006 ]
+[s S1288 . 1 `uc 1 MODE 1 0 :4:0 
+`uc 1 FMT 1 0 :1:4 
+`uc 1 OUT 1 0 :1:5 
+`uc 1 . 1 0 :1:6 
+`uc 1 EN 1 0 :1:7 
+]
+"33929
+"33929
+[s S1356 . 1 `uc 1 CCP2MODE 1 0 :4:0 
+`uc 1 CCP2FMT 1 0 :1:4 
+`uc 1 CCP2OUT 1 0 :1:5 
+`uc 1 . 1 0 :1:6 
+`uc 1 CCP2EN 1 0 :1:7 
+]
+"33929
+[s S1362 . 1 `uc 1 CCP2MODE0 1 0 :1:0 
+`uc 1 CCP2MODE1 1 0 :1:1 
+`uc 1 CCP2MODE2 1 0 :1:2 
+`uc 1 CCP2MODE3 1 0 :1:3 
+]
+"33929
+[u S1367 . 1 `S1288 1 . 1 0 `S1294 1 . 1 0 `S1356 1 . 1 0 `S1362 1 . 1 0 ]
+"33929
+"33929
+[v _CCP2CONbits CCP2CONbits `VES1367  1 e 1 @4007 ]
+"34097
+[v _CCPR1H CCPR1H `VEuc  1 e 1 @4010 ]
+"34154
+"34154
+[s S1299 . 1 `uc 1 CCP1MODE 1 0 :4:0 
+`uc 1 CCP1FMT 1 0 :1:4 
+`uc 1 CCP1OUT 1 0 :1:5 
+`uc 1 . 1 0 :1:6 
+`uc 1 CCP1EN 1 0 :1:7 
+]
+"34154
+[s S1305 . 1 `uc 1 CCP1MODE0 1 0 :1:0 
+`uc 1 CCP1MODE1 1 0 :1:1 
+`uc 1 CCP1MODE2 1 0 :1:2 
+`uc 1 CCP1MODE3 1 0 :1:3 
+]
+"34154
+[s S1310 . 1 `uc 1 . 1 0 :7:0 
+`uc 1 P1M1 1 0 :1:7 
+]
+"34154
+[u S1313 . 1 `S1288 1 . 1 0 `S1294 1 . 1 0 `S1299 1 . 1 0 `S1305 1 . 1 0 `S1310 1 . 1 0 ]
+"34154
+"34154
+[v _CCP1CONbits CCP1CONbits `VES1313  1 e 1 @4011 ]
+[s S1256 . 1 `uc 1 C1TSEL0 1 0 :1:0 
+`uc 1 C1TSEL1 1 0 :1:1 
+`uc 1 C2TSEL0 1 0 :1:2 
+`uc 1 C2TSEL1 1 0 :1:3 
+`uc 1 C3TSEL0 1 0 :1:4 
+`uc 1 C3TSEL1 1 0 :1:5 
+`uc 1 C4TSEL0 1 0 :1:6 
+`uc 1 C4TSEL1 1 0 :1:7 
+]
+"34323
+[s S1265 . 1 `uc 1 C1TSEL 1 0 :2:0 
+`uc 1 C2TSEL 1 0 :2:2 
+`uc 1 C3TSEL 1 0 :2:4 
+`uc 1 C4TSEL 1 0 :2:6 
+]
+"34323
+[u S1270 . 1 `S1256 1 . 1 0 `S1265 1 . 1 0 ]
+"34323
+"34323
+[v _CCPTMRS0bits CCPTMRS0bits `VES1270  1 e 1 @4013 ]
+"35596
+[v _T2PR T2PR `VEuc  1 e 1 @4028 ]
+[s S1111 . 1 `uc 1 OUTPS 1 0 :4:0 
+`uc 1 CKPS 1 0 :3:4 
+`uc 1 ON 1 0 :1:7 
+]
+"35686
+[s S1115 . 1 `uc 1 OUTPS0 1 0 :1:0 
+`uc 1 OUTPS1 1 0 :1:1 
+`uc 1 OUTPS2 1 0 :1:2 
+`uc 1 OUTPS3 1 0 :1:3 
+`uc 1 CKPS0 1 0 :1:4 
+`uc 1 CKPS1 1 0 :1:5 
+`uc 1 CKPS2 1 0 :1:6 
+]
+"35686
+[s S1123 . 1 `uc 1 T2OUTPS 1 0 :4:0 
+`uc 1 T2CKPS 1 0 :3:4 
+`uc 1 T2ON 1 0 :1:7 
+]
+"35686
+[s S1127 . 1 `uc 1 T2OUTPS0 1 0 :1:0 
+`uc 1 T2OUTPS1 1 0 :1:1 
+`uc 1 T2OUTPS2 1 0 :1:2 
+`uc 1 T2OUTPS3 1 0 :1:3 
+`uc 1 T2CKPS0 1 0 :1:4 
+`uc 1 T2CKPS1 1 0 :1:5 
+`uc 1 T2CKPS2 1 0 :1:6 
+`uc 1 TMR2ON 1 0 :1:7 
+]
+"35686
+[u S1136 . 1 `S1111 1 . 1 0 `S1115 1 . 1 0 `S1123 1 . 1 0 `S1127 1 . 1 0 ]
+"35686
+"35686
+[v _T2CONbits T2CONbits `VES1136  1 e 1 @4029 ]
+[s S1167 . 1 `uc 1 MODE 1 0 :5:0 
+`uc 1 CKSYNC 1 0 :1:5 
+`uc 1 CKPOL 1 0 :1:6 
+`uc 1 PSYNC 1 0 :1:7 
+]
+"35829
+[s S1172 . 1 `uc 1 MODE0 1 0 :1:0 
+`uc 1 MODE1 1 0 :1:1 
+`uc 1 MODE2 1 0 :1:2 
+`uc 1 MODE3 1 0 :1:3 
+`uc 1 MODE4 1 0 :1:4 
+]
+"35829
+[s S1178 . 1 `uc 1 T2MODE 1 0 :5:0 
+`uc 1 T2CKSYNC 1 0 :1:5 
+`uc 1 T2CKPOL 1 0 :1:6 
+`uc 1 T2PSYNC 1 0 :1:7 
+]
+"35829
+[s S1183 . 1 `uc 1 T2MODE0 1 0 :1:0 
+`uc 1 T2MODE1 1 0 :1:1 
+`uc 1 T2MODE2 1 0 :1:2 
+`uc 1 T2MODE3 1 0 :1:3 
+`uc 1 T2MODE4 1 0 :1:4 
+]
+"35829
+[u S1189 . 1 `S1167 1 . 1 0 `S1172 1 . 1 0 `S1178 1 . 1 0 `S1183 1 . 1 0 ]
+"35829
+"35829
+[v _T2HLTbits T2HLTbits `VES1189  1 e 1 @4030 ]
+[s S1217 . 1 `uc 1 CS 1 0 :4:0 
+]
+"35949
+[s S1219 . 1 `uc 1 CS0 1 0 :1:0 
+`uc 1 CS1 1 0 :1:1 
+`uc 1 CS2 1 0 :1:2 
+`uc 1 CS3 1 0 :1:3 
+]
+"35949
+[s S1224 . 1 `uc 1 T2CS 1 0 :4:0 
+]
+"35949
+[s S1226 . 1 `uc 1 T2CS0 1 0 :1:0 
+`uc 1 T2CS1 1 0 :1:1 
+`uc 1 T2CS2 1 0 :1:2 
+`uc 1 T2CS3 1 0 :1:3 
+]
+"35949
+[u S1231 . 1 `S1217 1 . 1 0 `S1219 1 . 1 0 `S1224 1 . 1 0 `S1226 1 . 1 0 ]
+"35949
+"35949
+[v _T2CLKCONbits T2CLKCONbits `VES1231  1 e 1 @4031 ]
+[s S2292 . 1 `uc 1 INT0EDG 1 0 :1:0 
+`uc 1 INT1EDG 1 0 :1:1 
+`uc 1 INT2EDG 1 0 :1:2 
+`uc 1 INT3EDG 1 0 :1:3 
+`uc 1 . 1 0 :1:4 
+`uc 1 IPEN 1 0 :1:5 
+`uc 1 PEIE_GIEL 1 0 :1:6 
+`uc 1 GIE_GIEH 1 0 :1:7 
+]
+"40176
+[s S2301 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 PEIE 1 0 :1:6 
+`uc 1 GIE 1 0 :1:7 
+]
+"40176
+[s S2305 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 GIEL 1 0 :1:6 
+`uc 1 GIEH 1 0 :1:7 
+]
+"40176
+[u S2309 . 1 `S2292 1 . 1 0 `S2301 1 . 1 0 `S2305 1 . 1 0 ]
+"40176
+"40176
+[v _INTCONbits INTCONbits `VES2309  1 e 1 @4082 ]
+"178 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _readingColor readingColor `i  1 e 2 0 ]
+"196
+[v _finished finished `i  1 e 2 0 ]
+"210
+[v _squaresb4 squaresb4 `i  1 e 2 0 ]
+"271
+[v _pos pos `i  1 e 2 0 ]
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+"25 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\main.c
+[v _hist hist `S291  1 e 200 0 ]
+"27
+[v _main main `(v  1 e 1 0 ]
+{
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"39
+[v main@mR mR `S276  1 a 8 144 ]
+[v main@mL mL `S276  1 a 8 136 ]
+"75
+} 0
+"8 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/dc_motor.h
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"18 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\breakup.c
+[v _mRinit mRinit `(S276  1 e 8 0 ]
+{
+"20
+[v mRinit@mR mR `S276  1 a 8 12 ]
+"29
+} 0
+"8 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/dc_motor.h
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"5 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\breakup.c
+[v _mLinit mLinit `(S276  1 e 8 0 ]
+{
+"7
+[v mLinit@mL mL `S276  1 a 8 12 ]
+"16
+} 0
+"5 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\serial.c
+[v _initUSART4 initUSART4 `(v  1 e 1 0 ]
+{
+"24
+} 0
+"6 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\dc_motor.c
+[v _initDCmotorsPWM initDCmotorsPWM `(v  1 e 1 0 ]
+{
+[v initDCmotorsPWM@PWMperiod PWMperiod `uc  1 a 1 wreg ]
+[v initDCmotorsPWM@PWMperiod PWMperiod `uc  1 a 1 wreg ]
+"10
+[v initDCmotorsPWM@PWMperiod PWMperiod `uc  1 a 1 4 ]
+"76
+} 0
+"75 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _initCalibColors initCalibColors `(v  1 e 1 0 ]
+{
+"85
+} 0
+"10
+[v _color_click_init color_click_init `(v  1 e 1 0 ]
+{
+"24
+} 0
+"39
+[v _color_writetoaddr color_writetoaddr `(v  1 e 1 0 ]
+{
+[v color_writetoaddr@address address `uc  1 a 1 wreg ]
+[v color_writetoaddr@address address `uc  1 a 1 wreg ]
+[v color_writetoaddr@value value `uc  1 p 1 6 ]
+[v color_writetoaddr@address address `uc  1 a 1 7 ]
+"45
+} 0
+"4 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\i2c.c
+[v _I2C_2_Master_Init I2C_2_Master_Init `(v  1 e 1 0 ]
+{
+"20
+} 0
+"319 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _away away `(v  1 e 1 0 ]
+{
+[s S24 color 27 `uc 1 name 1 0 `l 1 red 4 1 `l 1 green 4 5 `l 1 blue 4 9 `l 1 clear 4 13 `i 1 direction 2 17 `i 1 angle 2 19 `i 1 polarity 2 21 `i 1 squares 2 23 `i 1 intensity 2 25 ]
+"320
+[v away@currColor currColor `S24  1 a 27 0 ]
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"319
+[v away@mL mL `S276  1 p 8 116 ]
+[v away@mR mR `S276  1 p 8 124 ]
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+[v away@hist hist `*.39S291  1 p 2 132 ]
+"325
+} 0
+"212
+[v _color2instruction color2instruction `(v  1 e 1 0 ]
+{
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+[v color2instruction@mL mL `S276  1 p 8 69 ]
+[v color2instruction@mR mR `S276  1 p 8 77 ]
+[s S24 color 27 `uc 1 name 1 0 `l 1 red 4 1 `l 1 green 4 5 `l 1 blue 4 9 `l 1 clear 4 13 `i 1 direction 2 17 `i 1 angle 2 19 `i 1 polarity 2 21 `i 1 squares 2 23 `i 1 intensity 2 25 ]
+[v color2instruction@currColor currColor `S24  1 p 27 85 ]
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+[v color2instruction@hist hist `*.39S291  1 p 2 112 ]
+"269
+} 0
+"273
+[v _storeSequence storeSequence `(v  1 e 1 0 ]
+{
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+[v storeSequence@history history `*.30S291  1 p 1 4 ]
+[v storeSequence@angle angle `i  1 p 2 5 ]
+[v storeSequence@polarity polarity `i  1 p 2 7 ]
+[v storeSequence@direction direction `i  1 p 2 9 ]
+[v storeSequence@squaresb4 squaresb4 `i  1 p 2 11 ]
+[v storeSequence@squares squares `i  1 p 2 13 ]
+"283
+} 0
+"287
+[v _processSequence processSequence `(v  1 e 1 0 ]
+{
+"291
+[v processSequence@i i `i  1 a 2 9 ]
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+"287
+[v processSequence@history history `*.30S291  1 p 1 4 ]
+"298
+} 0
+"328
+[v _home home `(v  1 e 1 0 ]
+{
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+[v home@mL mL `S276  1 p 8 67 ]
+[v home@mR mR `S276  1 p 8 75 ]
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+[v home@hist hist `*.30S291  1 p 1 83 ]
+"331
+} 0
+"300
+[v _useSequence useSequence `(v  1 e 1 0 ]
+{
+"307
+[v useSequence@i i `i  1 a 2 65 ]
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"300
+[v useSequence@mL mL `S276  1 p 8 46 ]
+[v useSequence@mR mR `S276  1 p 8 54 ]
+[s S291 colorHistory 200 `[20]i 1 angle 40 0 `[20]i 1 polarity 40 40 `[20]i 1 direction 40 80 `[20]i 1 squaresb4 40 120 `[20]i 1 squares 40 160 ]
+[v useSequence@history history `*.30S291  1 p 1 62 ]
+"316
+} 0
+"282 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\dc_motor.c
+[v _turn turn `(v  1 e 1 0 ]
+{
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+[v turn@mL mL `S276  1 p 8 26 ]
+[v turn@mR mR `S276  1 p 8 34 ]
+[v turn@iter iter `ui  1 p 2 42 ]
+[v turn@polarity polarity `ui  1 p 2 44 ]
+"291
+} 0
+"165
+[v _turnRight turnRight `(v  1 e 1 0 ]
+{
+"167
+[v turnRight@i i `i  1 a 2 24 ]
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"165
+[v turnRight@mL mL `*.30S276  1 p 1 18 ]
+[v turnRight@mR mR `*.30S276  1 p 1 19 ]
+[v turnRight@iter iter `ui  1 p 2 20 ]
+"202
+} 0
+"125
+[v _turnLeft turnLeft `(v  1 e 1 0 ]
+{
+"127
+[v turnLeft@i i `i  1 a 2 24 ]
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"125
+[v turnLeft@mL mL `*.30S276  1 p 1 18 ]
+[v turnLeft@mR mR `*.30S276  1 p 1 19 ]
+[v turnLeft@iter iter `ui  1 p 2 20 ]
+"162
+} 0
+"103
+[v _stop stop `(v  1 e 1 0 ]
+{
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+[v stop@mL mL `*.30S276  1 p 1 18 ]
+[v stop@mR mR `*.30S276  1 p 1 19 ]
+"116
+} 0
+"205
+[v _goStraight goStraight `(v  1 e 1 0 ]
+{
+"209
+[v goStraight@i i `i  1 a 2 26 ]
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"205
+[v goStraight@mL mL `*.30S276  1 p 1 18 ]
+[v goStraight@mR mR `*.30S276  1 p 1 19 ]
+[v goStraight@direction direction `ui  1 p 2 20 ]
+[v goStraight@squares squares `i  1 p 2 22 ]
+"246
+} 0
+"182 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _checkIncidence checkIncidence `(v  1 e 1 0 ]
+{
+[s S241 RGBC 16 `l 1 red 4 0 `l 1 green 4 4 `l 1 blue 4 8 `l 1 clear 4 12 ]
+"184
+[v checkIncidence@tmp tmp `S241  1 a 16 32 ]
+"194
+} 0
+"248 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\dc_motor.c
+[v _bump bump `(v  1 e 1 0 ]
+{
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+[v bump@mL mL `*.30S276  1 p 1 18 ]
+[v bump@mR mR `*.30S276  1 p 1 19 ]
+[v bump@direction direction `ui  1 p 2 20 ]
+"280
+} 0
+"80
+[v _setMotorPWM setMotorPWM `(v  1 e 1 0 ]
+{
+"82
+[v setMotorPWM@negDuty negDuty `uc  1 a 1 17 ]
+[v setMotorPWM@posDuty posDuty `uc  1 a 1 16 ]
+[s S276 DC_motor 8 `uc 1 power 1 0 `uc 1 direction 1 1 `uc 1 brakemode 1 2 `uc 1 PWMperiod 1 3 `*.39uc 1 posDutyHighByte 2 4 `*.39uc 1 negDutyHighByte 2 6 ]
+"80
+[v setMotorPWM@m m `*.30S276  1 p 1 12 ]
+"100
+} 0
+"7 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\awdiv.c
+[v ___awdiv __awdiv `(i  1 e 2 0 ]
+{
+"10
+[v ___awdiv@quotient quotient `i  1 a 2 10 ]
+"11
+[v ___awdiv@sign sign `uc  1 a 1 9 ]
+[v ___awdiv@counter counter `uc  1 a 1 8 ]
+"7
+[v ___awdiv@dividend dividend `i  1 p 2 4 ]
+[v ___awdiv@divisor divisor `i  1 p 2 6 ]
+"41
+} 0
+"197 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _checkWhite checkWhite `(v  1 e 1 0 ]
+{
+[s S24 color 27 `uc 1 name 1 0 `l 1 red 4 1 `l 1 green 4 5 `l 1 blue 4 9 `l 1 clear 4 13 `i 1 direction 2 17 `i 1 angle 2 19 `i 1 polarity 2 21 `i 1 squares 2 23 `i 1 intensity 2 25 ]
+"199
+[v checkWhite@tmp tmp `S24  1 a 27 69 ]
+"206
+} 0
+"44 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X/color.h
+[s S24 color 27 `uc 1 name 1 0 `l 1 red 4 1 `l 1 green 4 5 `l 1 blue 4 9 `l 1 clear 4 13 `i 1 direction 2 17 `i 1 angle 2 19 `i 1 polarity 2 21 `i 1 squares 2 23 `i 1 intensity 2 25 ]
+"127 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\color.c
+[v _checkColor checkColor `(S24  1 e 27 0 ]
+{
+[s S241 RGBC 16 `l 1 red 4 0 `l 1 green 4 4 `l 1 blue 4 8 `l 1 clear 4 12 ]
+"142
+[v checkColor@colorDiff colorDiff `S241  1 a 16 53 ]
+"140
+[v checkColor@i i `i  1 a 2 35 ]
+"132
+[v checkColor@currColor currColor `S24  1 a 27 0 ]
+[s S241 RGBC 16 `l 1 red 4 0 `l 1 green 4 4 `l 1 blue 4 8 `l 1 clear 4 12 ]
+"131
+[v checkColor@Vals Vals `S241  1 a 16 37 ]
+"137
+[v checkColor@absDiff absDiff `l  1 a 4 31 ]
+"138
+[v checkColor@prevAbsDiff prevAbsDiff `l  1 a 4 27 ]
+"162
+} 0
+"28
+[v _triLED_tog triLED_tog `(v  1 e 1 0 ]
+{
+[v triLED_tog@state state `uc  1 a 1 wreg ]
+[v triLED_tog@state state `uc  1 a 1 wreg ]
+"30
+[v triLED_tog@state state `uc  1 a 1 4 ]
+"37
+} 0
+"47
+[v _color_read_all color_read_all `(v  1 e 1 0 ]
+{
+[s S241 RGBC 16 `l 1 red 4 0 `l 1 green 4 4 `l 1 blue 4 8 `l 1 clear 4 12 ]
+"50
+[v color_read_all@tmp tmp `S241  1 a 16 16 ]
+"47
+[v color_read_all@readVals readVals `*.30S241  1 p 1 8 ]
+"73
+} 0
+"45 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\i2c.c
+[v _I2C_2_Master_Write I2C_2_Master_Write `(v  1 e 1 0 ]
+{
+[v I2C_2_Master_Write@data_byte data_byte `uc  1 a 1 wreg ]
+[v I2C_2_Master_Write@data_byte data_byte `uc  1 a 1 wreg ]
+"47
+[v I2C_2_Master_Write@data_byte data_byte `uc  1 a 1 5 ]
+"49
+} 0
+"39
+[v _I2C_2_Master_Stop I2C_2_Master_Stop `(v  1 e 1 0 ]
+{
+"43
+} 0
+"27
+[v _I2C_2_Master_Start I2C_2_Master_Start `(v  1 e 1 0 ]
+{
+"31
+} 0
+"33
+[v _I2C_2_Master_RepStart I2C_2_Master_RepStart `(v  1 e 1 0 ]
+{
+"37
+} 0
+"51
+[v _I2C_2_Master_Read I2C_2_Master_Read `(uc  1 e 1 0 ]
+{
+[v I2C_2_Master_Read@ack ack `uc  1 a 1 wreg ]
+"53
+[v I2C_2_Master_Read@tmp tmp `uc  1 a 1 7 ]
+"51
+[v I2C_2_Master_Read@ack ack `uc  1 a 1 wreg ]
+"54
+[v I2C_2_Master_Read@ack ack `uc  1 a 1 6 ]
+"62
+} 0
+"22
+[v _I2C_2_Master_Idle I2C_2_Master_Idle `(v  1 e 1 0 ]
+{
+"25
+} 0
+"1 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\abs.c
+[v _abs abs `(i  1 e 2 0 ]
+{
+[v abs@a a `i  1 p 2 4 ]
+"4
+} 0
+"15 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\Umul16.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+{
+"17
+[v ___wmul@product product `ui  1 a 2 8 ]
+"15
+[v ___wmul@multiplier multiplier `ui  1 p 2 4 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 6 ]
+"53
+} 0
+"7 C:\Program Files\Microchip\xc8\v2.45\pic\sources\c99\common\aldiv.c
+[v ___aldiv __aldiv `(l  1 e 4 0 ]
+{
+"10
+[v ___aldiv@quotient quotient `l  1 a 4 20 ]
+"11
+[v ___aldiv@sign sign `uc  1 a 1 19 ]
+[v ___aldiv@counter counter `uc  1 a 1 18 ]
+"7
+[v ___aldiv@dividend dividend `l  1 p 4 10 ]
+[v ___aldiv@divisor divisor `l  1 p 4 14 ]
+"41
+} 0
+"10 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\interrupts.c
+[v _Interrupts_init Interrupts_init `(v  1 e 1 0 ]
+{
+"22
+} 0
+"28
+[v _HighISR HighISR `IIH(v  1 e 1 0 ]
+{
+"36
+} 0
+"90 C:\Users\jonat\OneDrive\Documents\GitHub\final-project-dej-jonny.X\serial.c
+[v _isDataInTxBuf isDataInTxBuf `(uc  1 e 1 0 ]
+{
+"92
+} 0
+"76
+[v _getCharFromTxBuf getCharFromTxBuf `(uc  1 e 1 0 ]
+{
+"79
+} 0
