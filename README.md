@@ -1,2 +1,3 @@
 # Portfolio
-"Portfolio" of problem solutions, models, and personal project code
+"Portfolio" of problem solutions and personal projects (3D models and code). 
+
