@@ -1,5 +1,8 @@
 # Final Project - Maze Navigating Buggy
 
+Read color2instruction flowchart for explanation of the algorithm designed
+Watch Medium Maze.mp4 for a video demo of the buggy in action
+
 Keywords/Abbreviations:
 Buggy, color cards
 Function - fxn
