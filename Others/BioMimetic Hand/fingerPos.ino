@@ -6,7 +6,7 @@
 
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
-#include <Servp.h>
+#include <Servo.h>
 #include <ESP_Now.h>
 
 #define MASTER_MAC {0x24, 0x0A, 0xC4, 0x0A, 0x0B, 0x80}
