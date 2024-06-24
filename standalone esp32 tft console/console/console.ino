@@ -25,25 +25,25 @@ Standalone Console using ESP32 and TFT Display
 #define SD_MOSI 23// same as tft
 
 // Define directional push button pins 
-#define dirUp 14
-#define dirDown 27
-#define dirLeft 12
-#define dirRight 26
+#define dirUp 27
+#define dirDown 25
+#define dirLeft 26
+#define dirRight 33
 
 // Define action push button pins
-#define actY 25
-#define actB 33
-#define actG 32
-#define actR 34
+#define actY 21 
+#define actB 22
+#define actG 3
+#define actR 1
 
 // define joystick pins
-#define joy1_x 16
-#define joy1_y 15
-#define joy1_sw 13
+#define joy1_x 12
+#define joy1_y 13
+#define joy1_sw 14
 
-#define joy2_x 19
-#define joy2_y 21
-#define joy2_sw 35
+#define joy2_x 34
+#define joy2_y 35
+#define joy2_sw 32
 
 //setup tft display
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
@@ -180,7 +180,7 @@ void setup() {
 
 // Loop function
 void loop() {
-  //readButtons(1000,1); // Read the buttons every 100 milliseconds
+  readButtons(1000,1); // Read the buttons every 100 milliseconds
   readJoysticks(1000,1); // Read the joysticks every 100 milliseconds
 }
 
