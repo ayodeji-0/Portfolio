@@ -18,7 +18,7 @@ b
 Construct scatter plots of CO wrt T and CO wrt RH and T wrt RH, Comment on fit using coeff. of determination (how well observed outcomes are replicated by the model)
 Is result consistent with exploratory analysis? i.e., is there a relationship between CO and T and RH? and the averages from online sources?
 
-# 2. Modelling
+## 2. Modelling
 a
 Fit two simple linear regression models to CO vs T and CO vs RH
 Comment on the fit using the coefficient of determination
