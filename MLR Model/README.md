@@ -27,7 +27,7 @@ Is the result consistent with the exploratory analysis?
 ## 3. Prediction & Residual Analysis
 Preliminary Analysis - creating test sets from the data
 
-##2-fold Cross Validation
+2-fold Cross Validation
 
 Take first half of the data as fold1, and second half as fold2
 procedure for computing the errors from prediction using fold1 and fold2 is as follows:
