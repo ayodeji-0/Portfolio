@@ -1,4 +1,4 @@
-## Statistics CW
+# Statistics CW
 Libraries used: sklearn, matplotlib, numpy
 
 Interests: Explainging variability in CO wrt T and RH
@@ -7,7 +7,7 @@ Model CO as f(T,RH)
 Investigate a time index as a covariate
 
 
-# 1. Exploratory Analysis
+## 1. Exploratory Analysis
 a
 Construct histogram of data, comment on distrib.
 Realise variable for average CO, T and RH from online sources
@@ -24,10 +24,10 @@ Fit a multiple linear regression model to CO as a function of T and RH
 Comment on the fit using the coefficient of determination
 Is the result consistent with the exploratory analysis?
 
-# 3. Prediction & Residual Analysis
+## 3. Prediction & Residual Analysis
 Preliminary Analysis - creating test sets from the data
 
-2-fold Cross Validation
+###2-fold Cross Validation
 
 Take first half of the data as fold1, and second half as fold2
 procedure for computing the errors from prediction using fold1 and fold2 is as follows:
@@ -43,7 +43,8 @@ Compute sum of squares of residuals for the 3 models,
 Hence determine the model that best fits the data in terms of overall error
 Draw bar chart to show overall error for the 3 models
 
-4. Time Index as a Covariate
+## 4. Time Index as a Covariate
+
 Dataset is obtained over 150 consecutive days in time order
 Construct time index starting frrom 1, 
 include time index as a fourth column in dataset - i.e., CO, T, RH, Time Index update csv file
