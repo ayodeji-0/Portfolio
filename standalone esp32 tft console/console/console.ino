@@ -5,33 +5,33 @@ Standalone Console using ESP32 and TFT Display
 
 //For ESP32, 22 SDA, 21 SCL
 // Include the libraries
-#include <TFT_eSPI.h> // Include the library for the TFT Display
-#include <SPI.h> // Include the library for the SPI Communication
-#include <Wire.h> // Include the library for the I2C Communication
-#include <Adafruit_GFX.h> // Include the library for the Adafruit Graphics
-#include <Adafruit_ST7735.h> // Hardware-specific library for ST7735
+#include <TFT_eSPI.h>         // Include the library for the TFT Display
+#include <SPI.h>              // Include the library for the SPI Communication
+#include <Wire.h>             // Include the library for the I2C Communication
+#include <Adafruit_GFX.h>     // Include the library for the Adafruit Graphics
+#include <Adafruit_ST7735.h>  // Hardware-specific library for ST7735
 
 
 //define ESP32 Pins for SPI Communication to TFT Display and SD card reader
 #define TFT_CS 5
-#define SD_CS 22
+#define SD_CS 16
 
-#define TFT_RST 4 // use 35 if it does not work
-#define TFT_SDA 23 //MOSI
-#define TFT_SCL 18 //SCK same for SD card reader.
-#define TFT_DC 2//A0,DC same difference
+#define TFT_RST 4   // use 35 if it does not work
+#define TFT_SDA 23  //MOSI
+#define TFT_SCL 18  //SCK same for SD card reader.
+#define TFT_DC 2    //A0,DC same difference
 
 #define SD_MISO 19
-#define SD_MOSI 23// same as tft
+#define SD_MOSI 23  // same as tft
 
-// Define directional push button pins 
+// Define directional push button pins
 #define dirUp 27
 #define dirDown 25
 #define dirLeft 26
 #define dirRight 33
 
 // Define action push button pins
-#define actY 21 
+#define actY 21
 #define actB 22
 #define actG 3
 #define actR 1
@@ -49,13 +49,13 @@ Standalone Console using ESP32 and TFT Display
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_RST);
 
 // Create array of variables for the buttons including the joystick buttons
-int buttons[] = {dirUp, dirDown, dirLeft, dirRight, actG, actB, actY, actR, joy1_sw, joy2_sw};
-int joystick1[] = {joy1_x, joy1_y};
-int joystick2[] = {joy2_x, joy2_y};
+int buttons[] = { dirUp, dirDown, dirLeft, dirRight, actG, actB, actY, actR, joy1_sw, joy2_sw };
+int joystick1[] = { joy1_x, joy1_y };
+int joystick2[] = { joy2_x, joy2_y };
 
 // array of names
-String buttonNames[] = {"Up", "Down", "Left", "Right", "G", "B", "Y", "R", "SW1", "SW2"};
-String joystickNames[] = {"X1", "Y1", "X2", "Y2"};
+String buttonNames[] = { "Up", "Down", "Left", "Right", "G", "B", "Y", "R", "SW1", "SW2" };
+String joystickNames[] = { "X1", "Y1", "X2", "Y2" };
 
 // Setup all buttons
 void setupButtons() {
@@ -65,30 +65,30 @@ void setupButtons() {
 }
 
 //Define function to read the buttons and send value as a packet playerButtonStatus over ESPNow to the receiver
-void readButtons(int rate,bool print) {
+void readButtons(int rate, bool print) {
   int buttonStatus[10];
   for (int i = 0; i < 10; i++) {
     buttonStatus[i] = digitalRead(buttons[i]);
 
-    if(print){
-    //print button status for debugging
-    //Serial.print("Button Status: ");
-    Serial.print(" " + buttonNames[i] + " " + buttonStatus[i]);
+    if (print) {
+      //print button status for debugging
+      //Serial.print("Button Status: ");
+      Serial.print(" " + buttonNames[i] + " " + buttonStatus[i]);
     }
   }
   // new line
   Serial.println();
-  delay(rate); //delay in ms
+  delay(rate);  //delay in ms
 
   // Send the button status to the receiver
   //esp_now_send(broadcastAddress, &buttonStatus, sizeof(buttonStatus));
 }
 
 //def fxn to read joystick values
-void readJoysticks(int rate,bool print) {
+void readJoysticks(int rate, bool print) {
   int joy1status[2], joy2status[2];
-  //combine 
-  
+  //combine
+
   int joystickStatus[4];
   /*
   for (int i = 0; i < 4; i++) {
@@ -104,9 +104,9 @@ void readJoysticks(int rate,bool print) {
     joystickStatus[2] = joy2status[0];
     joystickStatus[3] = joy2status[1];
     */
-    
-    //for sake of checking soldering read each joystick separately
-    for (int i = 0; i < 2; i++) {
+
+  //for sake of checking soldering read each joystick separately
+  for (int i = 0; i < 2; i++) {
     joy1status[i] = analogRead(joystick1[i]);
     joy2status[i] = analogRead(joystick2[i]);
 
@@ -115,16 +115,16 @@ void readJoysticks(int rate,bool print) {
     joystickStatus[2] = joy2status[0];
     joystickStatus[3] = joy2status[1];
 
-    if(print){
+    if (print) {
       //print joystick status for debugging
-    //Serial.print("Joystick Status: ");
-    Serial.print(" " + joystickNames[i] + " " + joystickStatus[i]);
-    Serial.print(" " + joystickNames[i+2] + " " + joystickStatus[i+2]);
+      //Serial.print("Joystick Status: ");
+      Serial.print(" " + joystickNames[i] + " " + joystickStatus[i]);
+      Serial.print(" " + joystickNames[i + 2] + " " + joystickStatus[i + 2]);
     }
   }
   // new line
   Serial.println();
-  delay(rate); //delay in ms
+  delay(rate);  //delay in ms
 
   // Send the joystick status to the receiver
   //esp_now_send(broadcastAddress, &joystickStatus, sizeof(joystickStatus));
@@ -139,48 +139,40 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   // Update the display
   updateDisplay();
 }
-
+*/
 // Setup TFT Display
 void setupTFT() {
-  tft.initR(INITR_BLACKTAB); // Initialize the display
-  tft.setRotation(3); // Set the rotation of the display
-  tft.fillScreen(ST7735_BLACK); // Fill the screen with black color
-  tft.setTextWrap(true); // Set the text wrap to true
-  tft.setTextColor(ST7735_WHITE); // Set the text color to white
-  tft.setTextSize(1); // Set the text size to 1
-  tft.setCursor(0, 0); // Set the cursor to (0, 0)
-  tft.println("Player 1"); // Print the text "Player 1"
-  tft.println("Button Status: "); // Print the text "Button Status: "
-  tft.println(playerButtonStatus); // Print the value of playerButtonStatus
+  tft.initR(INITR_BLACKTAB);     // Initialize the display
+  tft.setRotation(3);            // Set the rotation of the display
+  tft.fillScreen(ST7735_BLACK);  // Fill the screen with black color
+  tft.setTextWrap(true);         // Set the text wrap to true
+  //tft.setTextColor(ST7735_WHITE); // Set the text color to white
+  //tft.setTextSize(1); // Set the text size to 1
+  //tft.setCursor(0, 0); // Set the cursor to (0, 0)
+  //tft.println(playerButtonStatus); // Print the value of playerButtonStatus
 }
-*/
 
 
-/*
-// Setup the ESPNow
-void setupESPNow() {
-  WiFi.mode(WIFI_STA); // Set the WiFi mode to station
-  Serial.println(WiFi.macAddress()); // Print the MAC address of the ESP32
-  if (esp_now_init() != 0) { // Initialize ESPNow
-    Serial.println("Error initializing ESPNow"); // Print an error message
-    return; // Return from the function
-  }
-  esp_now_set_self_role(ESP_NOW_ROLE_CONTROLLER); // Set the role of the ESP32 to controller
-  esp_now_register_recv_cb(OnDataRecv); // Register the callback function for receiving data
-}
-*/
+//read bitmap saved on sd card
+
 
 // Setup the function
 void setup() {
-  Serial.begin(9600); // Start the serial communication
-  //setupTFT(); // Setup the TFT display
-  setupButtons(); // Setup the buttons
+  Serial.begin(9600);  // Start the serial communication
+  setupTFT();          // Setup the TFT display
+  setupButtons();      // Setup the buttons
   //setupESPNow(); // Setup the ESPNow
+
+  // Set the background color
+  tft.fillScreen(TFT_BLACK);
+  tft.setTextWrap(true);  // Enable text wrap
+
+  //Correctly fcall drawRGBBitmap
+  tft.drawRGBBitmap(0, 0, epd_bitmap_Standalone_UI, 160, 128);
 }
 
 // Loop function
 void loop() {
-  readButtons(1000,1); // Read the buttons every 100 milliseconds
-  readJoysticks(1000,1); // Read the joysticks every 100 milliseconds
+  readButtons(1000, 1);    // Read the buttons every 100 milliseconds
+  readJoysticks(1000, 1);  // Read the joysticks every 100 milliseconds
 }
-
