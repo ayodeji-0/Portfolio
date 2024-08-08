@@ -15,3 +15,5 @@
 ##  Implement existing emulators abusing memory robustness of ESP32
 
 ##  Add interrupts for battery saving
+
+![Progress Update Photo]([https://example.com/path/to/image.png](https://github.com/ayodeji-0/Portfolio/blob/main/standalone%20esp32%20tft%20console/progress%20update.jpg))
