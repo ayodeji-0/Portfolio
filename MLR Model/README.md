@@ -1,5 +1,7 @@
 # Statistics CW
 
+Only report drafts shown in this repo; for obvious reasons
+
 Final Code aaa620.ipynb or .py files
 
 Libraries used: sklearn, matplotlib, numpy
@@ -18,14 +20,21 @@ b
 Construct scatter plots of CO wrt T and CO wrt RH and T wrt RH, Comment on fit using coeff. of determination (how well observed outcomes are replicated by the model)
 Is result consistent with exploratory analysis? i.e., is there a relationship between CO and T and RH? and the averages from online sources?
 
+[1a](https://github.com/ayodeji-0/Portfolio/blob/main/MLR%20Model/1a.png)
+[1b](https://github.com/ayodeji-0/Portfolio/blob/main/MLR%20Model/1b.png)
+
 ## 2. Modelling
 a
 Fit two simple linear regression models to CO vs T and CO vs RH
 Comment on the fit using the coefficient of determination
+
 b
 Fit a multiple linear regression model to CO as a function of T and RH
 Comment on the fit using the coefficient of determination
 Is the result consistent with the exploratory analysis?
+
+[2a](https://github.com/ayodeji-0/Portfolio/blob/main/MLR%20Model/2a.png)
+[2b](https://github.com/ayodeji-0/Portfolio/blob/main/MLR%20Model/2b.png)
 
 ## 3. Prediction & Residual Analysis
 Preliminary Analysis - creating test sets from the data
@@ -45,6 +54,8 @@ b
 Compute sum of squares of residuals for the 3 models,
 Hence determine the model that best fits the data in terms of overall error
 Draw bar chart to show overall error for the 3 models
+
+[3b](https://github.com/ayodeji-0/Portfolio/blob/main/MLR%20Model/3b.png)
 
 ## 4. Time Index as a Covariate
 
@@ -71,4 +82,6 @@ Consider the following three regression models:’CO’ versus ‘T’ ,‘RH’
 Compare these three models using any of the methods shown in this coursework that you deem necessary.  
 Which model is best and why?  
 Using only the information youhave produced in this coursework, could you suggest a better model?
+
+
 
