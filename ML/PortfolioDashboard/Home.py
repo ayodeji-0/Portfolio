@@ -1,4 +1,5 @@
 import config as cfg
+
 import streamlit as st
 import streamlit.components.v1 as components
 from streamlit_option_menu import option_menu
@@ -9,6 +10,10 @@ import hmac
 import base64
 import time
 import plotly.graph_objects as go
+import plotly.express as px
+import plotly.io as pio
+import json
+
 import pandas as pd
 
 # Set page configuration
@@ -17,30 +22,51 @@ st.set_page_config(
     page_icon="📊",
 )
 
-selected = st.sidebar.selectbox("Select a page:", ["Home", "Portfolio", "About"])
+# Set page layout
+st.markdown("# Portfolio Dashboard 📊")
+# selected = option_menu(
+#             menu_title= None,  # required
+#             options=["Overview", "Performance", "Tools"],  # required
+#             icons=["person-workspace", "bullseye","tools"],  # optional
+#             default_index=0,  # optional
+#             orientation="horizontal",
+#             styles={
+#                 "container": {"padding": "0!important", "background-color": "#4c6081"},
+#                 "icon": {"color": "black", "font-size": "16px"},
+#                 "nav-link": {a
+#                     "font-size": "16px",
+#                     "text-align": "center",
+#                     "margin": "0px",
+#                     "--hover-color": "#eee",
+#                 },
+#                 "nav-link-selected": {"color" : "black", "background-color": "#ffffff"},
+#             },
+#         )
+#selected = streamlit_menu(example=EXAMPLE_NO)
 
 # Read the README file
 readmePath = 'ML\PortfolioDashboard\Readme.md'
 with open('Readme.md' , 'r') as file:
     readme_text = file.read()
 
-# Read Kraken API key and secret stored in environment variables
-api_url = "https://api.kraken.com/0/"
+# Read Kraken API key and secret stored in config file
+api_url = "https://api.kraken.com"
+
 api_key = cfg.api_key
-api_priv = cfg.api_priv
+api_sec = cfg.api_priv
 
 # Create dictionary to map API endpoints to their respective names and respective request types
 api_endpoints = {
-    'Assets': '/public/Assets',
-    'AssetPairs': '/public/AssetPairs',
-    'Ticker': '/public/Ticker',
-    'OHLC': '/public/OHLC',
+    'Assets': '/0/public/Assets',
+    'AssetPairs': '/0/public/AssetPairs',
+    'Ticker': '/0/public/Ticker',
+    'OHLC': '/0/public/OHLC',
 
-    'Balance': '/private/Balance',
-    'ExtendedBalance': '/private/BalanceEx',
-    'Ledgers': '/private/Ledgers',
-    'QueryLedgers': '/private/QueryLedgers',
-    'TradeVolume': '/private/TradeVolume',
+    'Balance': '/0/private/Balance',
+    'ExtendedBalance': '/0/private/BalanceEx',
+    'Ledgers': '/0/private/Ledgers',
+    'QueryLedgers': '/0/private/QueryLedgers',
+    'TradeVolume': '/0/private/TradeVolume',
 }
 
 # Function to generate a nonce
@@ -55,280 +81,182 @@ def get_kraken_signature(urlpath, data, secret):
 
     mac = hmac.new(base64.b64decode(secret), message, hashlib.sha512)
     sigdigest = base64.b64encode(mac.digest())
-    return sigdigest.decode()
+    return sigdigest.decode() 
 
-# Function to make Kraken API get request
-def kraken_request_get(uri_path, data, api_key, additional_headers=None):
-    uri_path = api_endpoints[uri_path]
-    headers = {
-        'API-Key': api_key,
-    }
+# Function to make Kraken API request
+def kraken_request(uri_path, data, api_key, api_sec, headers=None):
+    if headers is None:
+        headers = {}
 
-    # Add any additional headers if provided
-    if additional_headers:
-        headers.update(additional_headers)
-
-    req = requests.get((api_url + uri_path), headers=headers, params=data)
-    return req
-
-# Function to make Kraken API post request
-def kraken_request_post(uri_path, data, api_key, api_sec, additional_headers=None):
-    uri_path = api_endpoints[uri_path]
-    headers = {
-        'API-Key': api_key,
-        'API-Sign': get_kraken_signature(uri_path, data, api_sec)
-    }
-    
-    # Add any additional headers if provided
-    if additional_headers:
-        headers.update(additional_headers)
-    
+    headers['API-Key'] = api_key
+    headers['API-Sign'] = get_kraken_signature(uri_path, data, api_sec)
     req = requests.post((api_url + uri_path), headers=headers, data=data)
     return req
 
-usd_to_gbp = 0.72 # USD to GBP exchange rate
-
-# plot pie chart using seaborn
-def plot_pie_chart(data, title):
-    fig, ax = plt.subplots()
-    ax.pie(data['balance'], labels=data['asset'], autopct='%1.1f%%', startangle=90)
-    ax.axis('equal')
-    ax.set_title(title)
-    return fig
-
-# Function to get account balance
-def BalancePieChart():
-    # Get Account Balance
-    st.write("Account Balance 🏦")
-    # Setup account balance JSON from request result
-    accountBalance = kraken_request_post('Balance', {
-        "nonce": str(int(1000*time.time()))
-    }, api_key, api_priv)
-
-    print(accountBalance)
-
-    # Setup account balance dataframe
-    accountBalance = accountBalance.json()['result']
-    accountBalance = pd.DataFrame(accountBalance.items(), columns=['asset', 'balance'])
-    accountBalance['balance'] = accountBalance['balance'].astype(float)
-    accountBalance = accountBalance[accountBalance['balance'] > 0]
-
-    # Plot pie chart
-    fig = plot_pie_chart(accountBalance, 'Account Balance')
-    st.pyplot(fig)
-
-    # Display account balance table
-    st.write(accountBalance)
+#Function to make more non-trivial Kraken API get request
+def kraken_get_request(uri_path, data=None, headers=None):
+    if headers is None:
+        headers = {
+            'Accept': 'application/json'
+        }
     
-    '''
-    response = requests.get(url)
-    data = response.json()['result'][pair]
-    df = pd.DataFrame(data, columns=['time', 'open', 'high', 'low', 'close', 'vwap', 'volume', 'count'])
-    df['time'] = pd.to_datetime(df['time'], unit='s')
-    return df[['time', 'close', 'volume']]
+    headers.update(headers)
+    req = requests.get((api_url + uri_path), headers=headers, data=data)
+    return req
 
-# Fetch SOL/USD and MSOL/USD data
-solusd_data = fetch_kraken_data('SOLGBP')
+# Function to get the altnames of all tradeable Kraken asset pairs
+def grab_all_assets():
+    # Construct the Kraken API request and get all asset pairs from the Kraken API
+    assetPairs = kraken_get_request(api_endpoints['AssetPairs']).json()['result']
     
-    # Parse the JSON response
-    Balance = accountBalance.loads(accountBalance)
+    # Extract 'altname' for each asset pair
+    altNames = [details['altname'] for details in assetPairs.values()]
+    return altNames# altNames is a list of all tradeable asset pairs on Kraken example: ['XXBTZUSD', 'XETHZUSD', 'XETHXXBT']
 
-    # Convert datainto lists for plotting
-    labels = list(Balance.keys())
-    values = list(Balance.values()*usd_to_gbp)
+# Function to get the balance of all assets in the Kraken account with the given API keys
+def grab_ext_bal():
+    # Construct the Kraken API request and get the External Balance Information
+    resp = kraken_request(api_endpoints['ExtendedBalance'], {"nonce": generate_nonce(),}, api_key, api_sec).json()
+    balanceDict = {}
+    # Extract the balance of each asset and the asset name
+    for asset, details in resp['result'].items():
+        balance = details['balance']
+        if float(balance) == 0:
+            continue   
+        balanceDict[asset] = float(balance)
+    return balanceDict # balanceDict is a dictionary with asset names as keys and balances as values example: {'XBT': 0.1, 'GBP': 1000}
 
-    # Create an interactive pie chart using Plotly
-    fig = go.Figure(data=go.Pie(labels=labels, values=values))
 
-    # Update the layout of the pie chart
-    fig.update_layout(title='Portfolio Breakdown by Coin Type (GBP)')
-    st.plotly_chart(fig)
 
-    # Get the balances from the 'result' field in the response
+def grab_clean_bal():
+    balanceDict = grab_ext_bal()
+    balanceDictPairs = {}
+    # Clean asset names in balance dictionary by removing .f .s .p from the end of the asset name, rewards identified by these suffixes
+    #remove suffixes
+    for asset in balanceDict.keys():
+        if asset[-2:] == '.F' or asset[-2:] == '.S' or asset[-2:] == '.P':
+            balanceDict[asset[:-2]] = balanceDict.pop(asset)
+    #add USD to asset names
+    for asset in list(balanceDict.keys()):
+        if asset[0] != 'Z':
+            new_asset = asset + "USD"
+        elif asset[0] == 'Z':
+            new_asset = asset + "ZUSD"
+        balanceDictPairs[new_asset] = balanceDict[asset]
 
-    # # Merge coin types with balances data
-    # merged_data = pd.merge(balances_df, coin_types_df, left_on='coin', right_on='kraken_name', how='left')
-
-    # # Calculate the balance in GBP for each coin
-    # merged_data['balance_gbp'] = merged_data['balance'] * merged_data['price_gbp']
-
-    # # Group the data by coin type and sum the balances
-    # type_balances = merged_data.groupby('type')['balance_gbp'].sum().reset_index()
-
-    # # Create labels and values for the pie chart
-    # labels = type_balances['type'].tolist()
-    # values = type_balances['balance_gbp'].tolist()
-
-    # # Create an interactive pie chart using Plotly
-    # fig = go.Figure(data=go.Pie(labels=labels, values=values))
-    # fig.update_layout(title='Portfolio Breakdown by Coin Type (GBP)')
-
-    # # Show the pie chart
-    # st.plotly_chart(fig)
-
-    '''
-if __name__ == "__main__":
-    st.title("Portfolio Dashboard")
-    st.write("Kraken Portfolio Dashboard 📊")
-    st.write("This dashboard shows the breakdown of your Kraken portfolio by asset type.")
-    st.write("Simply replace relevant API key and secret in the config.py file.")
-    st.write("")
-    # Show the README content
-    readme_expander = st.expander("README Documentation 📓")
-    with readme_expander:
-        st.markdown(readme_text)
-
+    #treat currency names as special cases
+    for asset in list(balanceDict.keys()):
+        if asset == 'ZGBP':
+            balanceDict[asset[1:]] = balanceDict.pop(asset)
+    return (balanceDict,balanceDictPairs)
     
-    BalancePieChart()
+assetPairs = grab_all_assets()
+balanceDict = grab_clean_bal()[0]
+balancePairsDict = grab_clean_bal()[1]
+st.write(balanceDict)
+st.write(balancePairsDict)
+
+# Function to collect ohlc data for a given list of asset pairs
+# Takes asset pairs string list as an argument
+def grab_ohlc_data(assetPairs):
+    ohlcDict = {}
+    interval = 1 # time interval in minutes
+    for assetPair in assetPairs:
+        resp = kraken_get_request(api_endpoints['OHLC'], {"pair": assetPair, "interval": interval }).json()
+        ohlcDict[assetPair] = resp[assetPair]
+    return ohlcDict
+
+# ohlcDict = grab_ohlc_data(balanceDictPairs.keys())
+# st.write(ohlcDict)
+
+# Function to collect ticker data for a given list of asset pairs
+def grab_ticker_data(assetPairs):
+    tickerDict = {}
+    for assetPair in assetPairs:
+        resp = kraken_get_request(api_endpoints['Ticker'], {"pair": assetPair}).json()
+        tickerDict[assetPair] = resp['result'][assetPair]
+    return tickerDict
+
+
+def grab_mid(balancePairsDict):
+    tickerDict = grab_ticker_data(balancePairsDict.keys())
+    midPriceDict = {}
+    for assetPair in tickerDict.keys():
+        midPrice = (float(tickerDict[assetPair]['a'][0]) + float(tickerDict[assetPair]['b'][0])) / 2
+        midPriceDict[assetPair] = midPrice
+    return midPriceDict
+
+def grab_spot(balancePairsDict):
+    tickerDict = grab_ticker_data(balancePairsDict.keys())
+    spotPriceDict = {}
+    for assetPair in tickerDict.keys():
+        spotPrice = float(tickerDict[assetPair]['c'][0])
+        spotPriceDict[assetPair] = spotPrice
+    return spotPriceDict
+
+def grab_vwap(balancePairsDict):
+    tickerDict = grab_ticker_data(balancePairsDict.keys())
+    vwapDict = {}
+    for assetPair in tickerDict.keys():
+        vwap = float(tickerDict[assetPair]['p'][0])
+        vwapDict[assetPair] = vwap
+    return vwapDict
+
+tickerDict = grab_ticker_data(balancePairsDict)
+
+midPriceDict = grab_mid(balancePairsDict)
+spotPriceDict = grab_spot(balancePairsDict)
+vwapDict = grab_vwap(balancePairsDict)
+
+st.write("Mid Price Data")
+st.write(midPriceDict)
+st.write("Spot Price Data")
+st.write(spotPriceDict)
+st.write("VWAP Data")
+st.write(vwapDict)
+
+def interactivePlots(xVals, yVals, title, xLabel, yLabel, plotType):
+    fig = go.Figure()
+    if plotType == 'Bar':
+        fig.add_trace(go.Bar(x=xVals, y=yVals))
+    elif plotType == 'Pie':
+        fig.add_trace(go.Pie(labels=xVals, values=yVals))
+    elif plotType == 'Donut':
+        fig.add_trace(go.Pie(labels=xVals, values=yVals, hole=0.5))
+    elif plotType == 'Line':
+        fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='lines+markers'))
+    elif plotType == 'Scatter':
+        fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='markers'))
     
+    fig.update_layout(title_text=title, title_x=0.4, title_y=0.42)
+    fig.update_layout(title_font_size=14)
+    fig.update_xaxes(title_text=xLabel)
+    fig.update_yaxes(title_text=yLabel)
+    fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
+    fig.update_layout(showlegend=True)
+    fig.update_layout(legend=dict(orientation="v", yanchor="bottom", y=1.02, xanchor="right", x=1, itemsizing='constant'))
+    fig.update_layout(autosize=True)
+    fig.update_layout(height=600)
+    fig.update_layout(width=600)
+    st.title(title)
+    st.plotly_chart(fig, selection_mode='points')
 
-    '''
-    # Get Extended Balances from Kraken API
-    #Setup the dataframe for response array of assets, each asset is an array of, credit, credit_used, hold_trade
+# Initialize subplots
+#4 subplots for 4 assets in portfolio, showing individal asset information
+# Extract labels and values for pie chart in plotly from the balance dictionary
+labels = list(balanceDict.keys())
+values = list(balanceDict.values())
 
-  exB
-# Get Extended Bcolumns=['asset', 'alances', 'credit', 'credit_used', 'hold_trade'])
+st.table(pd.DataFrame({'Asset': list(balanceDict.keys()), 'Balance': list(balanceDict.values())}))
 
-    
-    # Construct the Kraken API request and get the balances
-    resp = kraken_request('/0/private/Balance', {
-        "nonce": str(int(1000*time.time()))
-    }, api_key, api_priv)
+interactivePlots(list(balanceDict.keys()), list(balanceDict.values()), 'Portfolio Distribution', 'Asset', 'Balance', 'Donut')
 
-
-    
-    # Convert the response JSON to a Python dictionary
-    data = resp.json()
-
-    # Get the balances from the 'result' field in the response
-    balances = data['result']
-
-    # Read coin types from CSV file
-    coin_types_df = pd.read_csv('kraken_lookup.csv')
-e for response array of assets, each asset is an array of balance, credit, credit_used, hold_trade
-    exBalance = pd.DataFrame(columns=['asset', 'balance', 'credit', 'credit_used', 'hold_trade'])
-
-    
-    # Construct the Kraken API request and get the balances
-    resp = kraken_request('/0/private/Balance', {
-        "nonce": str(int(1000*time.time()))
-    }, api_key, api_priv)
-
-
-    
-    # Convert the response JSON to a Python dictionary
-    data = resp.json()
-
-    # Get the balances from the 'result' field in the response
-    balances = data['result']
-
-    # Read coin types from CSV file
-    coin_types_df = pd.read_csv('kraken_lookup.csv')
-
-    # Merge coin types with balances data
-    merged_data = pd.merge(pd.DataFrame(pd.DataF.items(), columns=['kraken_name', 'Balance'])e(balances.items(me', 'Balance']), coin_types_df, on='kraken_name', how='left')
-
-    st.write    st.write("")or{}    # Fetch price data from Kraken API for all coins !    coin_names = merged_data['kraken_name'].tolist()on    coin_prices = {}
-
-    
-    for coin in coin_names:
-        if coin != 'ZUSD':  # Exclude fiat
-            pair = coin + 'USD'
-            price_response = requests.get(f'https://api.kraken.com/0/public/Ticker?pair={pair}')
-            price_data = price_response.json()
-            if 'result' in price_data and pair in price_data['result']:
-                coin_prices[coin] = float(price_data['result'][pair]['a'][0])
-
-    # Fetch USD to GBP exchange rate
-    exchange_rate_response = requests.get('https://api.exchangerate-api.com/v4/latest/USD')
-    exchange_rate_data = exchange_rate_response.json()
-    usd_to_gbp = exchange_rate_data['rates']['GBP']
-
-    # Create a dictionary to store balances by type
-    type_balances = {}
-    for _, row in merged_data.iterrows():
-        coin_type = row['type'] if not pd.isnull(row['type']) else 'Unknown'  # Use 'Unknown' for missing types
-        if coin_type not in type_balances:
-            type_balances[coin_type] = 0
-        balance_in_usd = float(row['Balance']) * coin_prices.get(row['kraken_name'], 0)  # Convert to USD
-        balance_in_gbp = balance_in_usd * usd_to_gbp  # Convert to GBP
-        type_balances[coin_type] += balance_in_gbp
-
-    # Create labels and values for the pie chartc/    labels = list(type_balances.keys())a     values = list(type_balances.values())n price_data and pair in price_data['result']:
-                coin_prices[coin] = float(price_data['result'][pair]['a'][0])
-
-    # Fetch USD to GBP exchange rate
-    exchange_rate_respon    # Show the portfolio content/a    portfolio_expander = st.expander("Portfolio Breakdown by Coin Type 📈 ")v4/latest/USD')
-    exchange_rate_data = exchange_rate_response.json()
-    usd_to_gbp = exchange_rate_data['rates']['GBP']
-
-    # Create a dictionary to store balances by type
-    type_balances = {}
-    for _, row in merged_data.iterrows():
-        coin_type = row['type'] if not pd.isnull(row['type']) else 'Unknown'  # Use 'Unknown' for missing types
-        if coin_type not in type_balances:
-            type_balances[coin_type] = 0
-        balance_in_usd = float(row['Balance']) * coin_prices.get(row['kraken_name'], 0)  # Convert to USD
-        balance_in_gbp = balance_in_usd * usd_to_gbp  # Convert to GBP
-        type_balances[coin_type] += balance_in_gbp
-    coin_prices = {}
-
-    
-    for coin in coin_names:
-        if coin != 'ZUSD':  # Exclude fiat
-            pair = coin + 'USD'
-            price_response = requests.get(f'https://api.kraken.com/0/public/Ticker?pair={pair}')
-            price_data = price_response.json()
-            if 'result' in price_data and pair in price_data['result']:
-                coin_prices[coin] = float(price_data['result'][pair]['a'][0])
-
-    # Fetch USD to GBP exchange rate
-    exchange_rate_response = requests.get('https://api.exchangerate-api.com/v4/latest/USD')
-    exchange_rate_data = exchange_rate_response.json()
-    usd_to_gbp = exchange_rate_data['rates']['GBP']
-
-    # Create a dictionary to store balances by type
-    type_balances = {}
-    for _, row in merged_data.iterrows():
-        coin_type = row['type'] if not pd.isnull(row['type']) else 'Unknown'  # Use 'Unknown' for missing types
-        if coin_type not in type_balances:
-            type_balances[coin_type] = 0
-        balance_in_usd = float(row['Balance']) * coin_prices.get(row['kraken_name'], 0)  # Convert to USD
-        balance_in_gbp = balance_in_usd * usd_to_gbp  # Convert to GBP
-        type_balances[coin_type] += balance_in_gbp
-
-    # Create labels and values for the pie chart
-    labels = list(list(type_bal.keys())
-    values = list(list(type_bal.values())
-
-    # Create an interactive pie chart using Plotly
-    fig = go.Figure(data=go.Pie(labels=labels, values=values))
-    fig.update_layout(title='Portfolio Breakdown by Coin Type (GBP)')
-  # Show the poportfolio content
-    portfolio_expander = porexpander("Portfolio Breakdown by Coin Type 📈 "= st.expander("Portfolio Breakdown by Coin Type 📈 ")
-    with portfolio_expander:
-        st.snow()
-        st.plotly_chart(fig)
-    # Show the supabase content
-    supabase_expander = st.expander("Supabase Backend 🚄 ")
-    with supabase_expander:
-        st.balloons()
-        st.write("kraken table hosted in Supabase 📝")
-        st.dataframe(coin_types_df)
-    # Show the author content
-    author_expander = st.expander("Author's Gthub Projects 🌏")
-    with author_expander:
-        url = "https://raw.githubusercontent.com/mattmajestic/mattmajestic/main/README.md"
-        response = requests.get(url)
-        readme_content = response.text if response.status_code == 200 else ""
-        iframe_html = f'<iframe srcdoc="{readme_content}</iframe>'
-        st.markdown(iframe_html, unsafe_allow_html=True)
-
-    # Show the BTC Pay Server
-    btc_expander = st.expander("Donate BTC 💸")
-    with btc_expander:
-        url = "https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=4r8DKKKMkxGPVKcW9TXB2eta7PTVzzs192TWM3KuY52e&price=100&currency=USD&defaultPaymentMethod=BTC"
-        link='Pay wit BTC [via this link](https://mainnet.demo.btcpayserver.org/api/v1/invoices?storeId=4r8DKKKMkxGPVKcW9TXB2eta7PTVzzs192TWM3KuY52e&price=100&currency=USD&defaultPaymentMethod=BTC)'
-        st.markdown(link,unsafe_allow_html=True)
-        components.iframe(url,width = 300,height = 500, scrolling=True)
-'''
+# fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+# fig.update_layout(title_text='Portfolio Distribution')
+# fig.update_traces(textinfo='percent+label')
+# fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+# fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
+# fig.update_layout(height=600)
+# fig.update_layout(width=800)
+# fig.update_layout(showlegend=True)
+# fig.show()
