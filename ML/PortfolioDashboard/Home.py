@@ -10,46 +10,63 @@ import hmac
 import base64
 import time
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.io as pio
+pio.templates.default = "seaborn"
 import json
-
 import pandas as pd
 
+import altair as alt
 # Set page configuration
 st.set_page_config(
     page_title="Portfolio Dashboard",
     page_icon="📊",
 )
 
+st.markdown(
+                """
+                <style>
+                div[data-baseweb="base-input"] > textarea {
+                    min-height: 1px;
+                    padding: 0;
+                    resize: none;
+                    -webkit-text-fill-color: black;
+                    text-align: center;
+                    font-size: 20px;
+                    background-color: white;
+                },
+                </style>
+                """, unsafe_allow_html=True
+                )
+
 # Set page layout
+#st.markdown("# Portfolio Dashboard 📊")
+
+#plan to use this to switch between overview, performance and tools in the future, with updated emoji
+selected = option_menu(
+            menu_title= None,  # required
+            options=["Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"],  # required
+            icons=['alt','alt','alt',],  # optional
+            default_index=0,  # optional
+            orientation="horizontal",
+            styles={
+                "container": {"padding": "0!important", "background-color": "#4c6081"},
+                "icon": {"color": "black", "font-size": "16px"},
+                "nav-link": {
+                    "font-size": "16px",
+                    "text-align": "center",
+                    "margin": "0px",
+                    "--hover-color": "#eee",
+                },
+                "nav-link-selected": {"color" : "black", "background-color": "#ffffff"},
+            },
+        )
+selected = option_menu
+
 st.markdown("# Portfolio Dashboard 📊")
-# selected = option_menu(
-#             menu_title= None,  # required
-#             options=["Overview", "Performance", "Tools"],  # required
-#             icons=["person-workspace", "bullseye","tools"],  # optional
-#             default_index=0,  # optional
-#             orientation="horizontal",
-#             styles={
-#                 "container": {"padding": "0!important", "background-color": "#4c6081"},
-#                 "icon": {"color": "black", "font-size": "16px"},
-#                 "nav-link": {a
-#                     "font-size": "16px",
-#                     "text-align": "center",
-#                     "margin": "0px",
-#                     "--hover-color": "#eee",
-#                 },
-#                 "nav-link-selected": {"color" : "black", "background-color": "#ffffff"},
-#             },
-#         )
-#selected = streamlit_menu(example=EXAMPLE_NO)
 
-# Read the README file
-readmePath = 'ML\PortfolioDashboard\Readme.md'
-with open('Readme.md' , 'r') as file:
-    readme_text = file.read()
-
-# Read Kraken API key and secret stored in config file
+# Read Kraken API key and secret stored in config   file
 api_url = "https://api.kraken.com"
 
 api_key = cfg.api_key
@@ -61,6 +78,7 @@ api_endpoints = {
     'AssetPairs': '/0/public/AssetPairs',
     'Ticker': '/0/public/Ticker',
     'OHLC': '/0/public/OHLC',
+    'default OHLC': '/0/public/OHLC',
 
     'Balance': '/0/private/Balance',
     'ExtendedBalance': '/0/private/BalanceEx',
@@ -71,7 +89,8 @@ api_endpoints = {
 
 # Function to generate a nonce
 def generate_nonce():
-    return str(int(1000 * time.time()))
+    nonce = str(int(1000 * time.time()))
+    return nonce
 
 # Function to get Kraken signature
 def get_kraken_signature(urlpath, data, secret):
@@ -95,14 +114,23 @@ def kraken_request(uri_path, data, api_key, api_sec, headers=None):
 
 #Function to make more non-trivial Kraken API get request
 def kraken_get_request(uri_path, data=None, headers=None):
-    if headers is None:
-        headers = {
-            'Accept': 'application/json'
-        }
-    
-    headers.update(headers)
+    if uri_path != api_endpoints['OHLC']:
+        if headers is None:
+            headers = {
+                'Accept': 'application/json'
+            }
+        
+        headers.update(headers)
+    elif uri_path == api_endpoints['OHLC']:
+        api_endpoints['OHLC'] = api_endpoints['OHLC'] + '?pair=' + data['pair'] + '&interval=' + data['interval']
     req = requests.get((api_url + uri_path), headers=headers, data=data)
     return req
+
+# Function to grab the current GBPUSD rate from the Kraken API
+def grab_rate():
+    resp = kraken_get_request(api_endpoints['Ticker'], {"pair": 'GBPUSD'}).json()
+    rate = 1/float(resp['result']['ZGBPZUSD']['c'][0])
+    return rate
 
 # Function to get the altnames of all tradeable Kraken asset pairs
 def grab_all_assets():
@@ -126,8 +154,6 @@ def grab_ext_bal():
         balanceDict[asset] = float(balance)
     return balanceDict # balanceDict is a dictionary with asset names as keys and balances as values example: {'XBT': 0.1, 'GBP': 1000}
 
-
-
 def grab_clean_bal():
     balanceDict = grab_ext_bal()
     balanceDictPairs = {}
@@ -149,73 +175,83 @@ def grab_clean_bal():
         if asset == 'ZGBP':
             balanceDict[asset[1:]] = balanceDict.pop(asset)
     return (balanceDict,balanceDictPairs)
-    
-assetPairs = grab_all_assets()
-balanceDict = grab_clean_bal()[0]
-balancePairsDict = grab_clean_bal()[1]
-st.write(balanceDict)
-st.write(balancePairsDict)
+
+
+
 
 # Function to collect ohlc data for a given list of asset pairs
 # Takes asset pairs string list as an argument
-def grab_ohlc_data(assetPairs):
-    ohlcDict = {}
-    interval = 1 # time interval in minutes
-    for assetPair in assetPairs:
-        resp = kraken_get_request(api_endpoints['OHLC'], {"pair": assetPair, "interval": interval }).json()
-        ohlcDict[assetPair] = resp[assetPair]
-    return ohlcDict
+def grab_ohlc_data(assetPairs, interval, since):
+#     #create api end point for each asset pair
+#     #check if assetPair has neither first nor last character as 'Z'
+#     #grab ohlc data for each asset pair using a constructed request using constructed endpoints
+    ohlcDictArray = []
+#     ohlc_endpoints = []
+#     for i in range(len(assetPairs)):
+#         if assetPairs[i][0] != 'Z' and assetPairs[i][-1] != 'Z':
+#             ohlc_endpoints.append(api_endpoints['OHLC'] + '?pair=' + assetPairs[i] + '&interval=' + str(interval) + '&since=' + str(since))
 
-# ohlcDict = grab_ohlc_data(balanceDictPairs.keys())
+#     for i in range(len(ohlc_endpoints)):
+#         if assetPairs[i][0] == 'Z' and assetPairs[i][-1] == 'Z':
+#             st.write(ohlc_endpoints[i])
+#             resp = kraken_get_request(ohlc_endpoints[i]).json()
+#             ohlcDictArray.append(resp)
+    
+#     return ohlcDictArray
+# st.write(balanceDict)
+# ohlcDict = grab_ohlc_data(list(balancePairsDict.keys()),1,generate_nonce())
+# st.write("OHLC Data:")
 # st.write(ohlcDict)
+
+# #init new time list for 720 points in ohlcDict for candle stick plot using same interval as ohlc data
+    ohlcDict['time'] = [time.time() - 720*60 + i*60 for i in range(720)]
+#streamlit candle stick plot
+#ig = go.Figure(data=[go.Candlestick(x=ohlcDict['time'], open=ohlcDict['open'], high=ohlcDict['high'], low=ohlcDict['low'], close=ohlcDict['close'])])
 
 # Function to collect ticker data for a given list of asset pairs
 def grab_ticker_data(assetPairs):
+    #example assetPairs = ['XXBTZUSD', 'XETHZUSD', 'XETHXXBT']
     tickerDict = {}
     for assetPair in assetPairs:
         resp = kraken_get_request(api_endpoints['Ticker'], {"pair": assetPair}).json()
         tickerDict[assetPair] = resp['result'][assetPair]
-    return tickerDict
+    return tickerDict # tickerDict is a dictionary with asset pairs as keys and ticker data as values example: {'XXBTZUSD': {'a': ['10000.0', '1', '1.000'], 'b': ['9999.0', '1', '1.000'], 'c': ['10000.5', '0.1'], 'v': ['100', '200'], 'p': ['10000.0', '10000.0'], 't': [100, 200], 'l': ['9999.0', '9999.0'], 'h': ['10000.0', '10000.0'], 'o': '10000.0'}}
 
-
-def grab_mid(balancePairsDict):
+def grab_price(balancePairsDict, priceType='spot', pricePoint=None):
     tickerDict = grab_ticker_data(balancePairsDict.keys())
-    midPriceDict = {}
-    for assetPair in tickerDict.keys():
-        midPrice = (float(tickerDict[assetPair]['a'][0]) + float(tickerDict[assetPair]['b'][0])) / 2
-        midPriceDict[assetPair] = midPrice
-    return midPriceDict
+    priceDict = {}
 
-def grab_spot(balancePairsDict):
-    tickerDict = grab_ticker_data(balancePairsDict.keys())
-    spotPriceDict = {}
-    for assetPair in tickerDict.keys():
-        spotPrice = float(tickerDict[assetPair]['c'][0])
-        spotPriceDict[assetPair] = spotPrice
-    return spotPriceDict
+    if pricePoint is None:
+        for assetPair in tickerDict.keys():
+            if priceType == 'spot':
+                price = float(tickerDict[assetPair]['c'][0])
+            elif priceType == 'mid':
+                price = (float(tickerDict[assetPair]['a'][0]) + float(tickerDict[assetPair]['b'][0])) / 2
+            elif priceType == 'vwap':
+                price = float(tickerDict[assetPair]['p'][0])
+            priceDict[assetPair] = price
 
-def grab_vwap(balancePairsDict):
-    tickerDict = grab_ticker_data(balancePairsDict.keys())
-    vwapDict = {}
-    for assetPair in tickerDict.keys():
-        vwap = float(tickerDict[assetPair]['p'][0])
-        vwapDict[assetPair] = vwap
-    return vwapDict
+    elif pricePoint is not None:
+        for assetPair in tickerDict.keys():   
+            if pricePoint == 'max':
+                price = float(tickerDict[assetPair]['h'][0])
+            elif pricePoint == 'min':
+                price = float(tickerDict[assetPair]['l'][0])
+            elif pricePoint == 'open':
+                price = float(tickerDict[assetPair]['o'])
 
-tickerDict = grab_ticker_data(balancePairsDict)
 
-midPriceDict = grab_mid(balancePairsDict)
-spotPriceDict = grab_spot(balancePairsDict)
-vwapDict = grab_vwap(balancePairsDict)
+    # Simplify asset names
+    for asset in list(priceDict.keys()):
+        if asset[-3:] == 'USD':
+            priceDict[asset[:-3]] = priceDict.pop(asset)
+    #doing it this way places gbp at the end of the dictionary
+    for asset in list(priceDict.keys()):
+        if asset[0] == 'Z' and asset[-1] == 'Z':
+            priceDict[asset[1:-1]] = priceDict.pop(asset)
+    return priceDict
 
-st.write("Mid Price Data")
-st.write(midPriceDict)
-st.write("Spot Price Data")
-st.write(spotPriceDict)
-st.write("VWAP Data")
-st.write(vwapDict)
-
-def interactivePlots(xVals, yVals, title, xLabel, yLabel, plotType):
+def interactivePlots(xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, alttitle=None):
     fig = go.Figure()
     if plotType == 'Bar':
         fig.add_trace(go.Bar(x=xVals, y=yVals))
@@ -227,36 +263,104 @@ def interactivePlots(xVals, yVals, title, xLabel, yLabel, plotType):
         fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='lines+markers'))
     elif plotType == 'Scatter':
         fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='markers'))
-    
+
+    fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value')
+
     fig.update_layout(title_text=title, title_x=0.4, title_y=0.42)
     fig.update_layout(title_font_size=14)
     fig.update_xaxes(title_text=xLabel)
     fig.update_yaxes(title_text=yLabel)
-    fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
+    fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
+    fig.update_layout(boxmode=boxmode)
     fig.update_layout(showlegend=True)
     fig.update_layout(legend=dict(orientation="v", yanchor="bottom", y=1.02, xanchor="right", x=1, itemsizing='constant'))
     fig.update_layout(autosize=True)
     fig.update_layout(height=600)
     fig.update_layout(width=600)
-    st.title(title)
-    st.plotly_chart(fig, selection_mode='points')
+    #st.markdown(f"###### {alttitle}")
 
-# Initialize subplots
-#4 subplots for 4 assets in portfolio, showing individal asset information
-# Extract labels and values for pie chart in plotly from the balance dictionary
-labels = list(balanceDict.keys())
-values = list(balanceDict.values())
+    st.text_area('', value=alttitle, height=30)
+    st.plotly_chart(fig, selection_mode='points', use_container_width=True)
 
-st.table(pd.DataFrame({'Asset': list(balanceDict.keys()), 'Balance': list(balanceDict.values())}))
+def grab_assetValues(balanceDict):
+    spotPriceDict = grab_price(balancePairsDict, 'spot')
+    #grab rate as a global variable using todays gpbusd rate from kraken api
+    
 
-interactivePlots(list(balanceDict.keys()), list(balanceDict.values()), 'Portfolio Distribution', 'Asset', 'Balance', 'Donut')
+    #firstly, ensure both dictionaries have the same key order
+    #exclude gbp since we are converting all values to gbp
+    assetValue = []
+    for i in range(len(balanceDict)):
+        if list(balanceDict.keys())[i] != 'GBP':
+            assetValue.append(rate*(list(balanceDict.values())[i] * list(spotPriceDict.values())[i]))
+        else:# list(balanceDict.keys())[i] == 'GBP':
+            assetValue.append(list(balanceDict.values())[i])
 
-# fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-# fig.update_layout(title_text='Portfolio Distribution')
-# fig.update_traces(textinfo='percent+label')
-# fig.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
-# fig.update_layout(margin=dict(l=0, r=0, t=0, b=0))
-# fig.update_layout(height=600)
-# fig.update_layout(width=800)
-# fig.update_layout(showlegend=True)
-# fig.show()
+            
+    return assetValue
+
+def port_to_dft(portValue, spotPriceDict):
+    data = {'Asset (Crypto)': list(spotPriceDict.keys()), 'Balance (Crypto)': list(spotPriceDict.keys()), 'Asset Price (GBP)': [(rate*price) for price in list(spotPriceDict.values())], 'Value (£)' : portValue}
+    df = pd.DataFrame(data).round(2)
+    df.loc['Total'] = df.sum()
+    #change asset(crypto) in sum to 'SUM'
+    df.loc['Total', 'Asset (Crypto)'] = 'TOTAL'
+    # Balance and asset price columns empty for sum row
+    df.loc['Total', ['Balance (Crypto)', 'Asset Price (GBP)']] = '-'
+    
+
+    return df # df is a pandas dataframe with asset names, balances, asset prices and asset values in GBP
+
+
+
+#grab rate
+rate = grab_rate()
+assetPairs = grab_all_assets()
+balanceDict = grab_clean_bal()[0]
+balancePairsDict = grab_clean_bal()[1]
+
+priceDict = grab_price(balancePairsDict, 'spot')
+midPriceDict = grab_price(balancePairsDict, 'mid')
+vwapDict = grab_price(balancePairsDict, 'vwap')
+minpriceDict = grab_price(balancePairsDict, 'spot', 'min')
+maxpriceDict = grab_price(balancePairsDict, 'spot', 'max')
+openpriceDict = grab_price(balancePairsDict, 'spot', 'open')
+
+# Grab overall portfolio value in GBP
+portValue = grab_assetValues(balanceDict)
+
+# Initialize dataframe with porfolio information
+df = port_to_dft(portValue, priceDict)
+# Plot the portfolio distribution as a donut chart minus total row
+
+interactivePlots(df['Asset (Crypto)'][:-1],df['Value (£)'][:-1], "Portfolio Distribuition <br>" + f"Total Value: {round(df['Value (£)'].iloc[-1],2)}" , 'Asset', 'Balance', 'Donut', alttitle='Current Porfolio Distribution in GBP')
+
+# Display the portfolio information in a table lower down the page
+
+st.dataframe(df, use_container_width=True, hide_index=True)
+
+fig = make_subplots(rows=2, cols=2)
+
+fig.add_trace(
+    go.Scatter(x=[1, 2, 3], y=[4, 5, 6]),
+    row=1, col=1,
+)
+
+fig.add_trace(
+    go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
+    row=1, col=2
+)
+
+fig.add_trace(
+    go.Bar(x=[1, 2, 3], y=[2, 5, 3]),
+    row=2, col=1
+)
+
+fig.add_trace(
+    #barchart of portfolio distribution
+    go.Bar(x=df['Asset (Crypto)'][:-1], y=df['Value (£)'][:-1]),
+    row=2, col=2
+)
+
+fig.update_layout(height=600, width=800, title_text="Portfolio Asset Plots")
+st.plotly_chart(fig, use_container_width=True)
