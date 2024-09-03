@@ -29,6 +29,7 @@ st.markdown(
                 <style>
                 div[data-baseweb="base-input"] > textarea {
                     min-height: 1px;
+                    min-width: 1px;
                     padding: 0;
                     resize: none;
                     -webkit-text-fill-color: black;
@@ -333,11 +334,26 @@ portValue = grab_assetValues(balanceDict)
 df = port_to_dft(portValue, priceDict)
 # Plot the portfolio distribution as a donut chart minus total row
 
-interactivePlots(df['Asset (Crypto)'][:-1],df['Value (£)'][:-1], "Portfolio Distribuition <br>" + f"Total Value: {round(df['Value (£)'].iloc[-1],2)}" , 'Asset', 'Balance', 'Donut', alttitle='Current Porfolio Distribution in GBP')
+interactivePlots(df['Asset (Crypto)'][:-1],df['Value (£)'][:-1], "Portfolio Distribuition <br>" + f"Total Value: {round(df['Value (£)'].iloc[-1],2)}" , 'Asset', 'Balance', 'Donut', alttitle='Current Porfolio Distribution')
 
 # Display the portfolio information in a table lower down the page
-
+st.divider()
 st.dataframe(df, use_container_width=True, hide_index=True)
+st.write(f"*Note: All values are in GBP*")
+st.write(f"*Note: The total value of the portfolio is calculated using the current spot price of each asset*")
+st.divider()
+
+fig = make_subplots(rows=1, cols=2, column_widths=[1, 0])   
+
+fig.add_trace(
+    go.Scatter(x=[1, 2, 3], y=[4, 5, 6]),
+    row=1, col=1,
+)
+
+fig.update_layout(height=600, width=800, title_text="Portfolio Value Over Time")
+fig.update_layout(margin=dict(l=5, r=5, t=30, b=5))
+st.plotly_chart(fig, use_container_width=True)
+
 
 fig = make_subplots(rows=2, cols=2)
 
@@ -362,5 +378,8 @@ fig.add_trace(
     row=2, col=2
 )
 
-fig.update_layout(height=600, width=800, title_text="Portfolio Asset Plots")
+fig.update_layout(height=600, width=800, title_text="Individual Asset Plots")
+fig.update_layout(showlegend=True)
+fig.update_layout(margin=dict(l=5, r=5, t=30, b=5))
 st.plotly_chart(fig, use_container_width=True)
+
