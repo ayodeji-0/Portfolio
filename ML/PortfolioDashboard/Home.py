@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import base64
 import time
+from datetime import datetime as dt, timedelta as td
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
@@ -18,10 +19,14 @@ import json
 import pandas as pd
 
 import altair as alt
+
+## Streamlit Configuration
+
 # Set page configuration
 st.set_page_config(
     page_title="Portfolio Dashboard",
     page_icon="📊",
+    layout="wide",
 )
 
 st.markdown(
@@ -122,9 +127,10 @@ def kraken_get_request(uri_path, data=None, headers=None):
             }
         
         headers.update(headers)
+        req = requests.get((api_url + uri_path), headers=headers, data=data)
     elif uri_path == api_endpoints['OHLC']:
-        api_endpoints['OHLC'] = api_endpoints['OHLC'] + '?pair=' + data['pair'] + '&interval=' + data['interval']
-    req = requests.get((api_url + uri_path), headers=headers, data=data)
+        temp_endpoint = api_endpoints['OHLC'] + '?pair=' + data['pair'] + '&interval=' + data['interval']
+        req = requests.get((api_url + temp_endpoint), headers=headers)
     return req
 
 # Function to grab the current GBPUSD rate from the Kraken API
@@ -160,7 +166,7 @@ def grab_clean_bal():
     balanceDictPairs = {}
     # Clean asset names in balance dictionary by removing .f .s .p from the end of the asset name, rewards identified by these suffixes
     #remove suffixes
-    for asset in balanceDict.keys():
+    for asset in list(balanceDict.keys()):
         if asset[-2:] == '.F' or asset[-2:] == '.S' or asset[-2:] == '.P':
             balanceDict[asset[:-2]] = balanceDict.pop(asset)
     #add USD to asset names
@@ -175,39 +181,8 @@ def grab_clean_bal():
     for asset in list(balanceDict.keys()):
         if asset == 'ZGBP':
             balanceDict[asset[1:]] = balanceDict.pop(asset)
+
     return (balanceDict,balanceDictPairs)
-
-
-
-
-# Function to collect ohlc data for a given list of asset pairs
-# Takes asset pairs string list as an argument
-def grab_ohlc_data(assetPairs, interval, since):
-#     #create api end point for each asset pair
-#     #check if assetPair has neither first nor last character as 'Z'
-#     #grab ohlc data for each asset pair using a constructed request using constructed endpoints
-    ohlcDictArray = []
-#     ohlc_endpoints = []
-#     for i in range(len(assetPairs)):
-#         if assetPairs[i][0] != 'Z' and assetPairs[i][-1] != 'Z':
-#             ohlc_endpoints.append(api_endpoints['OHLC'] + '?pair=' + assetPairs[i] + '&interval=' + str(interval) + '&since=' + str(since))
-
-#     for i in range(len(ohlc_endpoints)):
-#         if assetPairs[i][0] == 'Z' and assetPairs[i][-1] == 'Z':
-#             st.write(ohlc_endpoints[i])
-#             resp = kraken_get_request(ohlc_endpoints[i]).json()
-#             ohlcDictArray.append(resp)
-    
-#     return ohlcDictArray
-# st.write(balanceDict)
-# ohlcDict = grab_ohlc_data(list(balancePairsDict.keys()),1,generate_nonce())
-# st.write("OHLC Data:")
-# st.write(ohlcDict)
-
-# #init new time list for 720 points in ohlcDict for candle stick plot using same interval as ohlc data
-    ohlcDict['time'] = [time.time() - 720*60 + i*60 for i in range(720)]
-#streamlit candle stick plot
-#ig = go.Figure(data=[go.Candlestick(x=ohlcDict['time'], open=ohlcDict['open'], high=ohlcDict['high'], low=ohlcDict['low'], close=ohlcDict['close'])])
 
 # Function to collect ticker data for a given list of asset pairs
 def grab_ticker_data(assetPairs):
@@ -218,6 +193,31 @@ def grab_ticker_data(assetPairs):
         tickerDict[assetPair] = resp['result'][assetPair]
     return tickerDict # tickerDict is a dictionary with asset pairs as keys and ticker data as values example: {'XXBTZUSD': {'a': ['10000.0', '1', '1.000'], 'b': ['9999.0', '1', '1.000'], 'c': ['10000.5', '0.1'], 'v': ['100', '200'], 'p': ['10000.0', '10000.0'], 't': [100, 200], 'l': ['9999.0', '9999.0'], 'h': ['10000.0', '10000.0'], 'o': '10000.0'}}
 
+# Function to grab the OHLC data for a given list of asset pairs
+def grab_ohlc_data(assetPairs,tenure):
+    # Possible intervals: 1, 5, 15, 30, 60, 240, 1440, 10080, 21600 in minutes i.e., 1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, 4 hours, 1 day, 1 week, 1 month
+    # Possible tenures: 1D (1440), 7D (10080), 1M (43200), 3M (129600), 6M (259200), 1Y (518400) - corresponding intervals are tenure/720 to maximize data points from a single request
+    possible_intervals =[1, 5, 15, 30, 60, 240, 1440, 10080, 21600]
+    possible_timeframes = {'1D': 1440, '7D': 10080, '1M': 43200, '3M': 129600, '6M': 259200, '1Y': 518400}
+    # divide timerframe by 720 to get the interval but use the next larger closet possible interval
+    interval = min([i for i in possible_intervals if i >= possible_timeframes[tenure]/720], default=possible_intervals[-1])
+    interval = str(interval)
+    # Construct since parameter for the OHLC request using tenure and datetime unix converted timestamp, i.e., subtracting the tenure from the current time and equating it to the since parameter
+    since = int(time.time()) - possible_timeframes[tenure]*60
+    since = str(since)
+
+    # Construct the Kraken API request and get the OHLC data for the given asset pairs, ohlc grabbing requires use of a temporary endpoint for the OHLC url
+    ohlcDict = {}
+    for assetPair in assetPairs:
+        resp = kraken_get_request(api_endpoints['OHLC'], {"pair": assetPair, "interval": interval, "since": since}).json()
+        ohlcDict[assetPair] = resp['result'][assetPair]
+
+    # To process the response, we need to extract the OHLC data from the response particularly the tick data array and the last timestamp
+    # Append the OHLC data to a dataframe and return the dataframe with columns: Time, Open, High, Low, Close, Volume, Count, name it after the asset pair
+    return ohlcDict
+
+
+# Function to grab multiple price types/points of an asset pair from a dictionary of asset pairs
 def grab_price(balancePairsDict, priceType='spot', pricePoint=None):
     tickerDict = grab_ticker_data(balancePairsDict.keys())
     priceDict = {}
@@ -267,8 +267,8 @@ def interactivePlots(xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None
 
     fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value')
 
-    fig.update_layout(title_text=title, title_x=0.4, title_y=0.42)
-    fig.update_layout(title_font_size=14)
+    fig.update_layout(title_text=title, title_x=0.457, title_y=0.42)
+    fig.update_layout(title_font_size=20)
     fig.update_xaxes(title_text=xLabel)
     fig.update_yaxes(title_text=yLabel)
     fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
@@ -294,27 +294,45 @@ def grab_assetValues(balanceDict):
     for i in range(len(balanceDict)):
         if list(balanceDict.keys())[i] != 'GBP':
             assetValue.append(rate*(list(balanceDict.values())[i] * list(spotPriceDict.values())[i]))
+
+        else:# list(balanceDict.keys())[i] == 'GBP':
+            assetValue.append(list(balanceDict.values())[i])
+
+
+            
+    return assetValue
+
+def port_to_dft(portValue, spotPriceDict):
+    data = {'Asset (Crypto)': list(spotPriceDict.keys()), 'Balance (Asset)': portValue, 'Asset Price (GBP)': [(rate*price) for price in list(spotPriceDict.values())], 'Value (£)' : portValue}
+    df = pd.DataFrame(data).round(2)
+    df.loc['Total'] = df.sum()
+    #change asset(crypto) in sum to 'SUM'
+    df.loc['Total', 'Asset (Crypto)'] = 'TOTAL'
+    # Balance and asset price columns empty for sum row
+    df.loc['Total', ['Balance (Asset)', 'Asset Price (GBP)']] = '-'
+    
+
+    return df # df is a pandas dataframe with asset names, balances, asset prices and asset values in GBP
+
+def port_value_timed(balanceDict, priceDict, time):
+    #grab rate as a global variable using todays gpbusd rate from kraken api
+    #grab rate as a global variable using todays gpbusd rate from kraken api
+    rate = grab_rate()
+    #firstly, ensure both dictionaries have the same key order
+    #exclude gbp since we are converting all values to gbp
+    assetValue = []
+    for i in range(len(balanceDict)):
+        if list(balanceDict.keys())[i] != 'GBP':
+            assetValue.append(rate*(list(balanceDict.values())[i] * list(priceDict.values())[i]))
         else:# list(balanceDict.keys())[i] == 'GBP':
             assetValue.append(list(balanceDict.values())[i])
 
             
     return assetValue
 
-def port_to_dft(portValue, spotPriceDict):
-    data = {'Asset (Crypto)': list(spotPriceDict.keys()), 'Balance (Crypto)': list(spotPriceDict.keys()), 'Asset Price (GBP)': [(rate*price) for price in list(spotPriceDict.values())], 'Value (£)' : portValue}
-    df = pd.DataFrame(data).round(2)
-    df.loc['Total'] = df.sum()
-    #change asset(crypto) in sum to 'SUM'
-    df.loc['Total', 'Asset (Crypto)'] = 'TOTAL'
-    # Balance and asset price columns empty for sum row
-    df.loc['Total', ['Balance (Crypto)', 'Asset Price (GBP)']] = '-'
-    
+##Main Code
 
-    return df # df is a pandas dataframe with asset names, balances, asset prices and asset values in GBP
-
-
-
-#grab rate
+# Grab the GBPUSD rate from the Kraken API
 rate = grab_rate()
 assetPairs = grab_all_assets()
 balanceDict = grab_clean_bal()[0]
@@ -327,14 +345,41 @@ minpriceDict = grab_price(balancePairsDict, 'spot', 'min')
 maxpriceDict = grab_price(balancePairsDict, 'spot', 'max')
 openpriceDict = grab_price(balancePairsDict, 'spot', 'open')
 
+ohlcDict = grab_ohlc_data(balancePairsDict.keys(),'1D')
+st.write(ohlcDict)
+
 # Grab overall portfolio value in GBP
 portValue = grab_assetValues(balanceDict)
 
 # Initialize dataframe with porfolio information
 df = port_to_dft(portValue, priceDict)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Streamlit Plots
 # Plot the portfolio distribution as a donut chart minus total row
 
-interactivePlots(df['Asset (Crypto)'][:-1],df['Value (£)'][:-1], "Portfolio Distribuition <br>" + f"Total Value: {round(df['Value (£)'].iloc[-1],2)}" , 'Asset', 'Balance', 'Donut', alttitle='Current Porfolio Distribution')
+interactivePlots(df['Asset (Crypto)'][:-1],df['Value (£)'][:-1], "Portfolio Distribuition <br>" + f"    Total Value: {round(df['Value (£)'].iloc[-1],2)}" , 'Asset', 'Balance', 'Donut', alttitle='Current Porfolio Distribution')
 
 # Display the portfolio information in a table lower down the page
 st.divider()
