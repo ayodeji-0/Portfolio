@@ -325,17 +325,6 @@ df = port_to_dft(portValue, priceDict)
 tickerDict = grab_ticker_data(balancePairsDict.keys())
 st.write(tickerDict)
 
-fig = make_subplots(rows=1, cols=2)
+fig = make_subplots(rows=1, cols=2, subplot_titles=("Portfolio Value", "Portfolio Value (GBP)"))
 
-fig.add_trace(
-    go.Scatter(x=[1, 2, 3], y=[4, 5, 6]),
-    row=1, col=1
-)
-
-fig.add_trace(
-    go.Scatter(x=[20, 30, 40], y=[50, 60, 70]),
-    row=1, col=2
-)
-
-fig.update_layout(height=600, width=800, title_text="Side By Side Subplots")
-fig.show()
+fig.add_trace(go.Pie(labels=list(balanceDict.keys()), values=list(balanceDict.values()), hole=0.5), row=1, col=1)
