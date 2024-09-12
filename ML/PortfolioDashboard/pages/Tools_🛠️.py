@@ -3,7 +3,7 @@ import config as cfg
 
 import streamlit as st
 import streamlit.components.v1 as components
-from streamlit_option_menu import option_menu
+#from streamlit_option_menu import option_menu
 import requests
 import urllib.parse
 import hashlib
@@ -17,6 +17,7 @@ import plotly.express as px
 import plotly.io as pio
 pio.templates.default = "seaborn"
 
+from stock_indicators import indicators
 import json
 import pandas as pd
 
@@ -25,21 +26,73 @@ import numpy as np
 import os
 
 import Home as hm
-from Home import grab_ohlc_data, ohlc_to_df, ohlcDict, possible_intervals, possible_timeframes, balancePairsDict
+from Home import create_navbar, grab_ohlc_data, ohlc_to_df, ohlcDict, possible_intervals, possible_timeframes, balancePairsDict, df
 
+# ## Page Selection Menu
+# selected = create_navbar("Tools 🛠️")
+
+# pages = {
+#     'Home': 'Home.py',
+#     'Overview 🧑‍💻': 'pages\Overview_🧑‍💻.py',
+#     'Performance 🎯': 'pages\Performance_🎯.py',
+#     'Tools 🛠️': 'pages\Tools_🛠️.py'
+# }
+
+# pagePaths = ['Home.py', 'pages/overview.py', 'pages/Performance.py', 'pages/Tools_🛠️.py']
+# # Switch pages based on the selected option
+# if selected == 'Home':
+#     st.switch_page(pagePaths[0])
+# elif selected == 'Overview 🧑‍💻':
+#     st.switch_page(pagePaths[1])
+# elif selected == 'Performance 🎯':
+#     st.switch_page(pagePaths[2])
+# elif selected == 'Tools 🛠️':
+#     st.switch_page(pagePaths[3])
+
+## Tools Page
 
 timeframe = list(possible_timeframes.keys())
-tenure = st.selectbox('Select Timeframe', timeframe,placeholder="Select Timeframe", index=len(timeframe)-1)
+tenure = st.selectbox('Select Timeframe', timeframe,placeholder="Select Timeframe", index=len(timeframe)-1, key='toolsTenure')
 
 
 ohlcDict = grab_ohlc_data(balancePairsDict.keys(),tenure)
 dfOHLC = ohlc_to_df(ohlcDict)
 
+# Convert imported dataframe df to integer type only
+df = df.apply(pd.to_numeric, errors='coerce').fillna(0).astype(int)
 #Show top 10 assets according to statista api
 # Drag and drop capabilities
 # 1. Drag and drop stock symbols to create a portfolio of stocks, update dataframes and graphs accordingly
 st.markdown('## Drag and Drop Stocks to Create Portfolio')
+st.divider()
+
+
+# # Add allocation percentage to dataframe columns, and calculate allocation for all assets
+# df['Allocation'] = 0.0
+
+# # Ensure 'Allocation' column is of type float
+# df['Allocation'] = df['Allocation'].astype(float)
+
+# # Remove or replace non-numeric values in the 'Allocation' column
+# df['Allocation'] = pd.to_numeric(df['Allocation'], errors='coerce')
+
+# #round to 2 dp
+# df['Allocation'] = df['Allocation'].round(2)
+
+# # Handle NaN values (e.g., fill with 0 or drop them)
+# df['Allocation'].fillna(0, inplace=True)
+
+# Show appendable dataframe of portfolio assets with rows and columns switched
+toolsDF = st.data_editor(df, use_container_width=True, num_rows="dynamic")
+
+# Plot graphs of all stocks in the portfolio with range sliders in separate plots
+
+
+
 # PLot graphs of all stocks in the portfolio with range sliders in separate plots
+
+
+
 
 # Plot individual assets using a for loop but from the last asset to the first asset
 subplotCount = len(dfOHLC[0])

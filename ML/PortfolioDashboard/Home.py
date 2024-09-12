@@ -1,8 +1,8 @@
 import config as cfg
 
 import streamlit as st
+#from streamlit_option_menu import option_menu
 import streamlit.components.v1 as components
-from streamlit_option_menu import option_menu
 import requests
 import urllib.parse
 import hashlib
@@ -10,19 +10,19 @@ import hmac
 import base64
 import time
 from datetime import datetime as dt, timedelta as td
+
+# Other necessary imports
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.io as pio
-pio.templates.default = "seaborn"
-
 import json
 import pandas as pd
-
 import altair as alt
 import numpy as np
 import os
 
+# Streamlit Configuration
 ## Streamlit Configuration
 
 # Set page configuration
@@ -73,49 +73,68 @@ st.markdown(
 # Set page layout
 #st.markdown("# Portfolio Dashboard 📊")
 
-#plan to use this to switch between overview, performance and tools in the future, with updated emoji
-selected = option_menu(
-            menu_title= None,  # required
-            options=["Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"],  # required
-            icons=['alt','alt','alt',],  # optional
-            default_index=0,  # optional
-            orientation="horizontal",
-            styles={
-                "container": {"padding": "0!important", "background-color": "#4c6081"},
-                "icon": {"color": "black", "font-size": "16px"},
-                "nav-link": {
-                    "font-size": "16px",
-                    "text-align": "center",
-                    "margin": "0px",
-                    "--hover-color": "#eee",
-                },
-                "nav-link-selected": {"color" : "black", "background-color": "#ffffff"},
+            
+# Function to create the option menu
+#def create_navbar(pageName):
+def create_navbar():
+    from streamlit_option_menu import option_menu
+    return option_menu(
+        menu_title=None,
+        options=["Home","Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"],
+        icons=["house", "view-list", "graph-up", "tools"],
+        menu_icon="cast",
+        default_index=0,
+        orientation="horizontal",
+        styles={
+            "container": {"padding": "0!important", "background-color": "#4c6081"},
+            "icon": {"color": "black", "font-size": "16px"},
+            "nav-link": {
+                "font-size": "16px",
+                "text-align": "center",
+                "margin": "0px",
+                "--hover-color": "#eee",
             },
-        )
-selected = option_menu
-
-pages = {
-    'Overview 🧑‍💻': 'pages\overview.py',
-    'Performance 🎯': 'performance.py',
-    'Tools 🛠️': 'ML\PortfolioDashboard\pages\3_Tools_🛠️.py',
-}
+            "nav-link-selected": {"color": "black", "background-color": "#ffffff"},
+        },
+        #key=pageName  # Unique key for the home page
+    )
 
 
-if selected == 'Overview 🧑‍💻':
-    st.switch_page(list(pages.values(0)))
-elif selected == 'Performance 🎯':
-    st.switch_page(list(pages.values(1)))
-elif selected == 'Tools 🛠️':
-    st.write("Tools Page")
-    st.switch_page(list(pages.values(2)))
-## Page Selection
-#from pages import overview, performance, tools
+# Page Selection Menu
+#selected = create_navbar("Home")
+#selected = create_navbar()
+
+# pages = {
+#     'Home': 'Home.py',
+#     'Overview 🧑‍💻': 'pages\Overview_🧑‍💻.py',
+#     'Performance 🎯': 'pages\Performance_🎯.py',
+#     'Tools 🛠️': 'pages\Tools_🛠️.py'
+# }
+
+# pagePaths = ['pages/Home.py', 'pages/Overview_🧑‍💻.py', 'pages/Performance_🎯.py', 'pages/Tools_🛠️.py']
+# # Switch pages based on the selected option
+# if selected == 'Home':
+#     st.switch_page(pagePaths[0])
+# elif selected == 'Overview 🧑‍💻':
+#     st.switch_page(pagePaths[1])
+# elif selected == 'Performance 🎯':
+#     st.switch_page(pagePaths[2])
+# elif selected == 'Tools 🛠️':
+#     st.switch_page(pagePaths[3])
 
 
+# Prototype page selection using st.sidebar
+selected = st.sidebar.radio("Select Page", ["Home", "Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"])
 
-
+if selected == "Home":
+    st.switch_page("Home.py")
+elif selected == "Overview 🧑‍💻":
+    st.switch_page("pages\Overview_🧑‍💻.py")
+elif selected == "Performance 🎯":
+    st.switch_page("pages\Performance_🎯.py")
+elif selected == "Tools 🛠️":
+    st.switch_page("pages\Tools_🛠️.py")
 ## Start Overview Page
-
 st.markdown("# Portfolio Dashboard 📊")
 
 # Read Kraken API key and secret stored in config   file
@@ -186,7 +205,8 @@ def grab_rate():
     rate = 1/float(resp['result']['ZGBPZUSD']['c'][0])
     return rate
 
-
+#cache to not make multiple requests to the api
+#@st.cache_resource
 # Function to get the altnames of all tradeable Kraken asset pairs
 def grab_all_assets():
     # Construct the Kraken API request and get all asset pairs from the Kraken API
@@ -196,7 +216,9 @@ def grab_all_assets():
     altNames = [details['altname'] for details in assetPairs.values()]
     return altNames# altNames is a list of all tradeable asset pairs on Kraken example: ['XXBTZUSD', 'XETHZUSD', 'XETHXXBT']
 
+
 # Function to get the balance of all assets in the Kraken account with the given API keys
+#@st.cache_resource
 def grab_ext_bal():
     # Construct the Kraken API request and get the External Balance Information
     resp = kraken_request(api_endpoints['ExtendedBalance'], {"nonce": generate_nonce(),}, api_key, api_sec).json()
@@ -209,6 +231,7 @@ def grab_ext_bal():
         balanceDict[asset] = float(balance)
     return balanceDict # balanceDict is a dictionary with asset names as keys and balances as values example: {'XBT': 0.1, 'GBP': 1000}
 
+#@st.cache_resource
 def grab_clean_bal():
     balanceDict = grab_ext_bal()
     balanceDictPairs = {}
@@ -410,7 +433,7 @@ df = port_to_dft(portValue, priceDict)
 
 ## Plotting Functions
 # Add Caching for interactive plots
-@st.cache_resource
+#@st.cache_resource
 def interactivePlots(fig, xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, alttitle=None):
     fig = go.Figure()
     if plotType == 'Bar':
@@ -467,7 +490,7 @@ def makePlot(fig,xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, al
     fig.update_layout(width=600)
     return fig
 
-@st.cache_resource
+#@st.cache_resource
 def plotPie(df):
     fig = go.Figure()
     fig.add_trace(
@@ -480,7 +503,7 @@ def plotPie(df):
     yLabel = 'Balance'
     boxmode = 'group'
 
-    fig.update_layout(title_text=title, title_x=0.457, title_y=0.48)
+    fig.update_layout(title_text=title, title_x=0.43, title_y=0.48)
     fig.update_layout(title_font_size=20)
     fig.update_xaxes(title_text=xLabel)
     fig.update_yaxes(title_text=yLabel)

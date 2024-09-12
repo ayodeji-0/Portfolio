@@ -3,7 +3,7 @@ import config as cfg
 
 import streamlit as st
 import streamlit.components.v1 as components
-from streamlit_option_menu import option_menu
+#from streamlit_option_menu import option_menu
 import requests
 import urllib.parse
 import hashlib
@@ -11,7 +11,7 @@ import hmac
 import base64
 import time
 import plotly.graph_objects as go
-from plotly.sublots import make_subplots
+from plotly.subplots import make_subplots
 import plotly.express as px
 import plotly.io as pio
 pio.templates.default = "seaborn"
@@ -19,36 +19,36 @@ import json
 import pandas as pd
 
 import altair as alt
+
+from Home import create_navbar, grab_ohlc_data, ohlc_to_df, ohlcDict, possible_intervals, possible_timeframes, balancePairsDict, df
 # Set page configuration
 st.set_page_config(
     page_title="Portfolio Dashboard",
     page_icon="📊",
 )
 
-# Set page layout
-st.markdown("# Portfolio Dashboard 📊")
+# ## Page Selection Menu
+# selected = create_navbar("Overview 🧑‍💻")
 
-#plan to use this to switch between overview, performance and tools in the future, with updated emoji
-selected = option_menu(
-            menu_title= None,  # required
-            options=["Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"],  # required
-            icons=['alt','alt','alt',],  # optional
-            default_index=0,  # optional
-            orientation="horizontal",
-            styles={
-                "container": {"padding": "0!important", "background-color": "#4c6081"},
-                "icon": {"color": "black", "font-size": "16px"},
-                "nav-link": {
-                    "font-size": "16px",
-                    "text-align": "center",
-                    "margin": "0px",
-                    "--hover-color": "#eee",
-                },
-                "nav-link-selected": {"color" : "black", "background-color": "#ffffff"},
-            },
-        )
-selected = option_menu
+# pages = {
+#     'Home': 'Home.py',
+#     'Overview 🧑‍💻': 'pages\Overview_🧑‍💻.py',
+#     'Performance 🎯': 'pages\Performance_🎯.py',
+#     'Tools 🛠️': 'pages\Tools_🛠️.py'
+# }
 
+# pagePaths = ['Home.py', 'pages/overview.py', 'pages/Performance.py', 'pages/Tools_🛠️.py']
+# # Switch pages based on the selected option
+# if selected == 'Home':
+#     st.switch_page(pagePaths[0])
+# elif selected == 'Overview 🧑‍💻':
+#     st.switch_page(pagePaths[1])
+# elif selected == 'Performance 🎯':
+#     st.switch_page(pagePaths[2])
+# elif selected == 'Tools 🛠️':
+#     st.switch_page(pagePaths[3])
+
+## Overview Page   
 # Read the README file
 readmePath = 'ML\PortfolioDashboard\Readme.md'
 with open('Readme.md' , 'r') as file:
@@ -167,25 +167,29 @@ def grab_clean_bal():
 
 
 
-# Function to collect ohlc data for a given list of asset pairs
-# Takes asset pairs string list as an argument
-def grab_ohlc_data(assetPairs, interval, since):
-#     #create api end point for each asset pair
-#     #check if assetPair has neither first nor last character as 'Z'
-#     #grab ohlc data for each asset pair using a constructed request using constructed endpoints
-    ohlcDictArray = []
-#     ohlc_endpoints = []
-#     for i in range(len(assetPairs)):
-#         if assetPairs[i][0] != 'Z' and assetPairs[i][-1] != 'Z':
-#             ohlc_endpoints.append(api_endpoints['OHLC'] + '?pair=' + assetPairs[i] + '&interval=' + str(interval) + '&since=' + str(since))
 
-#     for i in range(len(ohlc_endpoints)):
-#         if assetPairs[i][0] == 'Z' and assetPairs[i][-1] == 'Z':
-#             st.write(ohlc_endpoints[i])
-#             resp = kraken_get_request(ohlc_endpoints[i]).json()
-#             ohlcDictArray.append(resp)
-    
-#     return ohlcDictArray
+# Function to grab the OHLC data for a given list of asset pairs
+def grab_ohlc_data(assetPairs,tenure):
+    # divide timerframe by 720 to get the interval but use the next larger closet possible interval
+    interval = min([i for i in possible_intervals if i >= possible_timeframes[tenure]/720], default=possible_intervals[-1])
+    interval = str(interval)
+    # Construct since parameter for the OHLC request using tenure and datetime unix converted timestamp, i.e., subtracting the tenure from the current time and equating it to the since parameter
+    since = int(time.time()) - possible_timeframes[tenure]*60
+    since = str(since)
+
+    # Construct the Kraken API request and get the OHLC data for the given asset pairs, ohlc grabbing requires use of a temporary endpoint for the OHLC url
+    ohlcDict = {}
+    for assetPair in assetPairs:
+        if assetPair == 'ZGBPZUSD':
+            continue
+        resp = kraken_get_request(api_endpoints['OHLC'], {"pair": assetPair, "interval": interval, "since": since}).json()
+        ohlcDict[assetPair] = resp['result'][assetPair]
+
+    # To process the response, we need to extract the OHLC data from the response particularly the tick data array and the last timestamp
+    # Append the OHLC data to a dataframe and return the dataframe with columns: Time, Open, High, Low, Close, Volume, Count, name it after the asset pair
+    return ohlcDict
+
+
 # st.write(balanceDict)
 # ohlcDict = grab_ohlc_data(list(balancePairsDict.keys()),1,generate_nonce())
 # st.write("OHLC Data:")
