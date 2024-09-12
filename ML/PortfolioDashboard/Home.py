@@ -3,6 +3,9 @@ import config as cfg
 import streamlit as st
 #from streamlit_option_menu import option_menu
 import streamlit.components.v1 as components
+from streamlit.components.v1 import html
+
+
 import requests
 import urllib.parse
 import hashlib
@@ -22,17 +25,10 @@ import altair as alt
 import numpy as np
 import os
 
-# Streamlit Configuration
+from nav import create_navbar
+
+#selection = create_navbar()
 ## Streamlit Configuration
-
-# Set page configuration
-st.set_page_config(
-    page_title="Portfolio Dashboard",
-    page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
-
 st.markdown(
                 """
                 <style>
@@ -55,7 +51,15 @@ st.markdown(
                     width: 10%;
                 }
                 </style>
-                <style>
+               
+                
+                <style> text_title {text-align: center;}</style>
+                """, unsafe_allow_html=True
+                )
+
+
+'''
+ <style>
                 div[data-testid="stSidebarNav"] {
                         display: none;}
                 </style>
@@ -63,77 +67,7 @@ st.markdown(
                 div[data-testid="collapsedControl"]{
                     visibility: hidden;}
                 </style>
-                
-                <style> text_title {text-align: center;}</style>
-                """, unsafe_allow_html=True
-                )
-
-
-
-# Set page layout
-#st.markdown("# Portfolio Dashboard 📊")
-
-            
-# Function to create the option menu
-#def create_navbar(pageName):
-def create_navbar():
-    from streamlit_option_menu import option_menu
-    return option_menu(
-        menu_title=None,
-        options=["Home","Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"],
-        icons=["house", "view-list", "graph-up", "tools"],
-        menu_icon="cast",
-        default_index=0,
-        orientation="horizontal",
-        styles={
-            "container": {"padding": "0!important", "background-color": "#4c6081"},
-            "icon": {"color": "black", "font-size": "16px"},
-            "nav-link": {
-                "font-size": "16px",
-                "text-align": "center",
-                "margin": "0px",
-                "--hover-color": "#eee",
-            },
-            "nav-link-selected": {"color": "black", "background-color": "#ffffff"},
-        },
-        #key=pageName  # Unique key for the home page
-    )
-
-
-# Page Selection Menu
-#selected = create_navbar("Home")
-#selected = create_navbar()
-
-# pages = {
-#     'Home': 'Home.py',
-#     'Overview 🧑‍💻': 'pages\Overview_🧑‍💻.py',
-#     'Performance 🎯': 'pages\Performance_🎯.py',
-#     'Tools 🛠️': 'pages\Tools_🛠️.py'
-# }
-
-# pagePaths = ['pages/Home.py', 'pages/Overview_🧑‍💻.py', 'pages/Performance_🎯.py', 'pages/Tools_🛠️.py']
-# # Switch pages based on the selected option
-# if selected == 'Home':
-#     st.switch_page(pagePaths[0])
-# elif selected == 'Overview 🧑‍💻':
-#     st.switch_page(pagePaths[1])
-# elif selected == 'Performance 🎯':
-#     st.switch_page(pagePaths[2])
-# elif selected == 'Tools 🛠️':
-#     st.switch_page(pagePaths[3])
-
-
-# Prototype page selection using st.sidebar
-selected = st.sidebar.radio("Select Page", ["Home", "Overview 🧑‍💻", "Performance 🎯", "Tools 🛠️"])
-
-if selected == "Home":
-    st.switch_page("Home.py")
-elif selected == "Overview 🧑‍💻":
-    st.switch_page("pages\Overview_🧑‍💻.py")
-elif selected == "Performance 🎯":
-    st.switch_page("pages\Performance_🎯.py")
-elif selected == "Tools 🛠️":
-    st.switch_page("pages\Tools_🛠️.py")
+'''
 ## Start Overview Page
 st.markdown("# Portfolio Dashboard 📊")
 
@@ -206,7 +140,7 @@ def grab_rate():
     return rate
 
 #cache to not make multiple requests to the api
-#@st.cache_resource
+@st.cache_resource
 # Function to get the altnames of all tradeable Kraken asset pairs
 def grab_all_assets():
     # Construct the Kraken API request and get all asset pairs from the Kraken API
@@ -218,7 +152,7 @@ def grab_all_assets():
 
 
 # Function to get the balance of all assets in the Kraken account with the given API keys
-#@st.cache_resource
+@st.cache_resource
 def grab_ext_bal():
     # Construct the Kraken API request and get the External Balance Information
     resp = kraken_request(api_endpoints['ExtendedBalance'], {"nonce": generate_nonce(),}, api_key, api_sec).json()
@@ -231,7 +165,7 @@ def grab_ext_bal():
         balanceDict[asset] = float(balance)
     return balanceDict # balanceDict is a dictionary with asset names as keys and balances as values example: {'XBT': 0.1, 'GBP': 1000}
 
-#@st.cache_resource
+@st.cache_resource
 def grab_clean_bal():
     balanceDict = grab_ext_bal()
     balanceDictPairs = {}
@@ -386,7 +320,12 @@ def grab_assetValues(balanceDict):
     return assetValue
 
 def port_to_dft(portValue, spotPriceDict):
-    data = {'Asset (Crypto)': [asset for asset in list(spotPriceDict.keys()) if asset != 'GBP'], 'Balance (Asset)': [balance for asset, balance in balanceDict.items() if asset != 'GBP'], 'Asset Price (GBP)': [(rate*price) for asset, price in spotPriceDict.items() if asset != 'GBP'], 'Value (£)' : [rate*balance*price for asset, balance, price in zip(balanceDict.keys(), balanceDict.values(), spotPriceDict.values()) if asset != 'GBP']}
+    data = {
+        'Asset (Crypto)': [asset for asset in list(spotPriceDict.keys()) if asset != 'GBP'],
+        'Balance (Asset)': [round(balance, 2) for asset, balance in balanceDict.items() if asset != 'GBP'],
+        'Asset Price (GBP)': [round(rate * price, 2) for asset, price in spotPriceDict.items() if asset != 'GBP'],
+        'Value (£)': [round(rate * balance * price, 2) for asset, balance, price in zip(balanceDict.keys(), balanceDict.values(), spotPriceDict.values()) if asset != 'GBP']
+    }
     df = pd.DataFrame(data).round(2)
     df.loc['Total'] = df.sum()
     #change asset(crypto) in sum to 'SUM'
@@ -400,6 +339,9 @@ def port_to_dft(portValue, spotPriceDict):
 def port_value_timed():
 
     return
+
+
+
 
 ##Main Code
 
@@ -429,175 +371,179 @@ portValue = grab_assetValues(balanceDict)
 # Initialize dataframe with porfolio information
 df = port_to_dft(portValue, priceDict)
 
-
-
-## Plotting Functions
-# Add Caching for interactive plots
-#@st.cache_resource
-def interactivePlots(fig, xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, alttitle=None):
-    fig = go.Figure()
-    if plotType == 'Bar':
-        fig.add_trace(go.Bar(x=xVals, y=yVals))
-    elif plotType == 'Pie':
-        fig.add_trace(go.Pie(labels=xVals, values=yVals))
-    elif plotType == 'Donut':
-        fig.add_trace(go.Pie(labels=xVals, values=yVals, hole=0.6))
-    elif plotType == 'Line':
-        fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='lines+markers'))
-    elif plotType == 'Scatter':
-        fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='markers'))
-
-    fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value')
-
-    fig.update_layout(title_text=title, title_x=0.457, title_y=0.42)
-    fig.update_layout(title_font_size=20)
-    fig.update_xaxes(title_text=xLabel)
-    fig.update_yaxes(title_text=yLabel)
-    fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
-    fig.update_layout(boxmode=boxmode)
-    fig.update_layout(showlegend=True)
-    fig.update_layout(legend=dict(orientation="v", yanchor="bottom", y=1.02, xanchor="right", x=1, itemsizing='constant'))
-    fig.update_layout(autosize=True)
-    fig.update_layout(height=600)
-    fig.update_layout(width=600)
-    #st.markdown(f"###### {alttitle}")
-
-    return fig
-
-# Function to make a plot without plotting it
-def makePlot(fig,xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, alttitle=None):
-    if plotType == 'Bar':
-        fig.add_trace(go.Bar(x=xVals, y=yVals))
-    elif plotType == 'Pie':
-        fig.add_trace(go.Pie(labels=xVals, values=yVals))
-    elif plotType == 'Donut':
-        fig.add_trace(go.Pie(labels=xVals, values=yVals, hole=0.5))
-    elif plotType == 'Line':
-        fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='lines+markers'))
-    elif plotType == 'Scatter':
-        fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='markers'))
-
-    fig.update_layout(title_text=title, title_x=0.457, title_y=0.42)
-    fig.update_layout(title_font_size=20)
-    fig.update_xaxes(title_text=xLabel)
-    fig.update_yaxes(title_text=yLabel)
-    fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
-    fig.update_layout(boxmode=boxmode)
-    fig.update_layout(showlegend=True)
-    fig.update_layout(legend=dict(orientation="v", yanchor="top", y=1.02, xanchor="left", x=0, itemsizing='constant'))
-    fig.update_layout(autosize=True)
-    fig.update_layout(height=600)
-    fig.update_layout(width=600)
-    return fig
-
-#@st.cache_resource
-def plotPie(df):
-    fig = go.Figure()
-    fig.add_trace(
-        go.Pie(labels=df['Asset (Crypto)'][:-1],values=df['Value (£)'][:-1], hole = 0.5)
-    )
-
-
-    title = "Portfolio Distribuition <br>" + f"    Total Value: {round(df['Value (£)'].iloc[-1],2)}"
-    xLabel = 'Asset'
-    yLabel = 'Balance'
-    boxmode = 'group'
-
-    fig.update_layout(title_text=title, title_x=0.43, title_y=0.48)
-    fig.update_layout(title_font_size=20)
-    fig.update_xaxes(title_text=xLabel)
-    fig.update_yaxes(title_text=yLabel)
-    fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
-    fig.update_layout(boxmode=boxmode)
-    fig.update_layout(showlegend=True)
-    fig.update_layout(legend=dict(orientation="v", yanchor="top", y=1.02, xanchor="left", x=0, itemsizing='constant'))
-    fig.update_layout(autosize=True)
-    fig.update_layout(height=600)
-    fig.update_layout(width=600)
-    
-    return fig 
-
-
-## Streamlit Plot 1
-# Plot the portfolio distribution as a donut chart minus total row
-fig = plotPie(df)
-
-st.text_area('',value='Current Porfolio Distribution', height=30)
-st.plotly_chart(fig, selection_mode='points', use_container_width=True)
-
-# Display the portfolio information in a table lower down the page
-st.divider()
-st.dataframe(df, use_container_width=True, hide_index=True)
-st.write(f"*NB*: The total value of the portfolio is calculated using the current spot price of each asset and excludes any cash balances (Current Cash Balance: £" + str(round(balancePairsDict['ZGBPZUSD'], 2)) + ").")
-st.divider()    
-
-##
-
-timeframe = list(possible_timeframes.keys())
-tenure = st.selectbox('Select Timeframe', timeframe,placeholder="Select Timeframe", index=len(timeframe)-1)
-
-
+#grab 1Y by default
+tenure = '1Y'
 ohlcDict = grab_ohlc_data(balancePairsDict.keys(),tenure)
 dfOHLC = ohlc_to_df(ohlcDict)
 
+if __name__ == "__main__":
+    # This code will not run on import
+    
+    ## Plotting Functions
+    # Add Caching for interactive plots
+    @st.cache_resource
+    def interactivePlots(fig, xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, alttitle=None):
+        fig = go.Figure()
+        if plotType == 'Bar':
+            fig.add_trace(go.Bar(x=xVals, y=yVals))
+        elif plotType == 'Pie':
+            fig.add_trace(go.Pie(labels=xVals, values=yVals))
+        elif plotType == 'Donut':
+            fig.add_trace(go.Pie(labels=xVals, values=yVals, hole=0.6))
+        elif plotType == 'Line':
+            fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='lines+markers'))
+        elif plotType == 'Scatter':
+            fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='markers'))
 
-## Streamlit Plots 2
-fig = go.Figure()
-# Plot the portfolio value over time as a candlestick chart
-fig.add_trace(
-    go.Candlestick(x=dfOHLC[0][0]['Time'], open=dfOHLC[0][0]['Open'], high=dfOHLC[0][0]['High'], low=dfOHLC[0][0]['Low'], close=dfOHLC[0][0]['Close'], increasing_line_color= 'orange', decreasing_line_color= 'SlateBlue')
-)
-# Create sliders with labels
-min_date = dfOHLC[0][0]['Time'].min().strftime('%Y-%m-%d')
-max_date = dfOHLC[0][0]['Time'].max().strftime('%Y-%m-%d')
+        fig.update_traces(textinfo='percent+label', textposition='inside', hoverinfo='label+value')
 
-# Ensure min_date and max_date are of datetime type
-min_date = pd.to_datetime(min_date).date()
-max_date = pd.to_datetime(max_date).date()
+        fig.update_layout(title_text=title, title_x=0.457, title_y=0.42)
+        fig.update_layout(title_font_size=20)
+        fig.update_xaxes(title_text=xLabel)
+        fig.update_yaxes(title_text=yLabel)
+        fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
+        fig.update_layout(boxmode=boxmode)
+        fig.update_layout(showlegend=True)
+        fig.update_layout(legend=dict(orientation="v", yanchor="bottom", y=1.02, xanchor="right", x=1, itemsizing='constant'))
+        fig.update_layout(autosize=True)
+        fig.update_layout(height=600)
+        fig.update_layout(width=600)
+        #st.markdown(f"###### {alttitle}")
+
+        return fig
+
+    # Function to make a plot without plotting it
+    def makePlot(fig,xVals, yVals, title, xLabel, yLabel, plotType, boxmode=None, alttitle=None):
+        if plotType == 'Bar':
+            fig.add_trace(go.Bar(x=xVals, y=yVals))
+        elif plotType == 'Pie':
+            fig.add_trace(go.Pie(labels=xVals, values=yVals))
+        elif plotType == 'Donut':
+            fig.add_trace(go.Pie(labels=xVals, values=yVals, hole=0.5))
+        elif plotType == 'Line':
+            fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='lines+markers'))
+        elif plotType == 'Scatter':
+            fig.add_trace(go.Scatter(x=xVals, y=yVals, mode='markers'))
+
+        fig.update_layout(title_text=title, title_x=0.457, title_y=0.42)
+        fig.update_layout(title_font_size=20)
+        fig.update_xaxes(title_text=xLabel)
+        fig.update_yaxes(title_text=yLabel)
+        fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
+        fig.update_layout(boxmode=boxmode)
+        fig.update_layout(showlegend=True)
+        fig.update_layout(legend=dict(orientation="v", yanchor="top", y=1.02, xanchor="left", x=0, itemsizing='constant'))
+        fig.update_layout(autosize=True)
+        fig.update_layout(height=600)
+        fig.update_layout(width=600)
+        return fig
+
+    @st.cache_resource
+    def plotPie(df):
+        fig = go.Figure()
+        fig.add_trace(
+            go.Pie(labels=df['Asset (Crypto)'][:-1],values=df['Value (£)'][:-1], hole = 0.5)
+        )
 
 
-fig.update_layout(height=600, width=800, title_text="Portfolio Value Over Time")
-fig.update_layout(margin=dict(l=5, r=5, t=30, b=5))
-st.plotly_chart(fig, use_container_width=True)
+        title = "Portfolio Distribuition <br>" + f"    Total Value: {round(df['Value (£)'].iloc[-1],2)}"
+        xLabel = 'Asset'
+        yLabel = 'Balance'
+        boxmode = 'group'
+
+        fig.update_layout(title_text=title, title_x=0.43, title_y=0.48)
+        fig.update_layout(title_font_size=20)
+        fig.update_xaxes(title_text=xLabel)
+        fig.update_yaxes(title_text=yLabel)
+        fig.update_layout(margin=dict(l=5, r=5, t=5, b=5))
+        fig.update_layout(boxmode=boxmode)
+        fig.update_layout(showlegend=True)
+        fig.update_layout(legend=dict(orientation="v", yanchor="top", y=1.02, xanchor="left", x=0, itemsizing='constant'))
+        fig.update_layout(autosize=True)
+        fig.update_layout(height=600)
+        fig.update_layout(width=600)
+        
+        return fig 
+
+
+    ## Streamlit Plot 1
+    # Plot the portfolio distribution as a donut chart minus total row
+    fig = plotPie(df)
+
+    st.text_area('',value='Current Porfolio Distribution', height=30)
+    st.plotly_chart(fig, selection_mode='points', use_container_width=True)
+
+    # Display the portfolio information in a table lower down the page
+    st.divider()
+    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.write(f"*NB*: The total value of the portfolio is calculated using the current spot price of each asset and excludes any cash balances (Current Cash Balance: £" + str(round(balancePairsDict['ZGBPZUSD'], 2)) + ").")
+    st.divider()    
+
+    ##
+
+    timeframe = list(possible_timeframes.keys())
+    tenure = st.selectbox('Select Timeframe', timeframe,placeholder="Select Timeframe", index=len(timeframe)-1)
 
 
 
-# Plot individual assets using a for loop but from the last asset to the first asset
-subplotCount = len(dfOHLC[0])
-rowC = subplotCount//2 + subplotCount%2
-colC = 2
-#row and col count for debugging 
-# st.write(f"Plots: {subplotCount}, Rows: {rowC}, Columns: {colC}")
-#fig = make_subplots(rows= rowC , cols= colC, subplot_titles=list(balanceDict.keys())[-2::-1])
-fig = make_subplots(rows= rowC , cols= colC, subplot_titles=list(dfOHLC[1]))
-#fig = make_subplots(rows=3, cols=2, subplot_titles= list(balanceDict.keys())[-1:0], column_widths=[1, 1])
-#Scatter plots of ohlc close prices for assets in the portfolio
-# Smooth the Close prices using a moving average
-window_size = 20
 
-for i in range(len(dfOHLC[0])):
-    dfOHLC[0][i]['Close'] = (dfOHLC[0][i]['Close'].rolling(window_size, min_periods=1).mean()).round(2)
+    ## Streamlit Plots 2
+    fig = go.Figure()
+    # Plot the portfolio value over time as a candlestick chart
+    fig.add_trace(
+        go.Candlestick(x=dfOHLC[0][0]['Time'], open=dfOHLC[0][0]['Open'], high=dfOHLC[0][0]['High'], low=dfOHLC[0][0]['Low'], close=dfOHLC[0][0]['Close'], increasing_line_color= 'orange', decreasing_line_color= 'SlateBlue')
+    )
+    # Create sliders with labels
+    min_date = dfOHLC[0][0]['Time'].min().strftime('%Y-%m-%d')
+    max_date = dfOHLC[0][0]['Time'].max().strftime('%Y-%m-%d')
 
-#convert back to string types
-for i in range(len(dfOHLC[0])):
-    dfOHLC[0][i]['Close'] = dfOHLC[0][i]['Close'].astype(str)
+    # Ensure min_date and max_date are of datetime type
+    min_date = pd.to_datetime(min_date).date()
+    max_date = pd.to_datetime(max_date).date()
 
-for i in range(len(dfOHLC[0])):
-    max_val = 2.5* float(dfOHLC[0][i]['High'].max())    
-    #round to nearest 10
-    #max_val = round(max_val, -1)
 
-    fig.add_trace(go.Scatter(x=dfOHLC[0][i]['Time'], y=dfOHLC[0][i]['Open'], mode='lines+markers', name=dfOHLC[0][i]['Time'][0].strftime('%Y-%m-%d') + ' ' + dfOHLC[0][i]['Open'][0], showlegend=False, fill = 'tozeroy'), row= i//2 + 1 , col=(i%2) +1)
-    fig.update_yaxes(range = [0, max_val],title_text='Open Price (GBP)', row= i//2 + 1, col=(i%2) +1)
-    fig.update_xaxes(title_text='Date and Time', row= i//2 + 1, col=(i%2) +1)
-    fig.update_layout(autotypenumbers='convert types')
-    #onhover show the asset name, date and close price
-    fig.update_traces(hovertemplate='Date: %{x}<br>Close Price: £%{y}')
+    fig.update_layout(height=600, width=800, title_text="Portfolio Value Over Time")
+    fig.update_layout(margin=dict(l=5, r=5, t=30, b=5))
+    st.plotly_chart(fig, use_container_width=True)
 
-fig.update_layout(height=1000, width=1000, title_text="Individual Assets", title_x=0.457)
-fig.update_layout(showlegend=True)
-fig.update_layout(margin=dict(l=5, r=5, t=30, b=5))
-fig.print_grid()
-st.plotly_chart(fig, use_container_width=True)
+
+
+    # Plot individual assets using a for loop but from the last asset to the first asset
+    subplotCount = len(dfOHLC[0])
+    rowC = subplotCount//2 + subplotCount%2
+    colC = 2
+    #row and col count for debugging 
+    # st.write(f"Plots: {subplotCount}, Rows: {rowC}, Columns: {colC}")
+    #fig = make_subplots(rows= rowC , cols= colC, subplot_titles=list(balanceDict.keys())[-2::-1])
+    fig = make_subplots(rows= rowC , cols= colC, subplot_titles=list(dfOHLC[1]))
+    #fig = make_subplots(rows=3, cols=2, subplot_titles= list(balanceDict.keys())[-1:0], column_widths=[1, 1])
+    #Scatter plots of ohlc close prices for assets in the portfolio
+    # Smooth the Close prices using a moving average
+    window_size = 20
+
+    for i in range(len(dfOHLC[0])):
+        dfOHLC[0][i]['Close'] = (dfOHLC[0][i]['Close'].rolling(window_size, min_periods=1).mean()).round(2)
+
+    #convert back to string types
+    for i in range(len(dfOHLC[0])):
+        dfOHLC[0][i]['Close'] = dfOHLC[0][i]['Close'].astype(str)
+
+    for i in range(len(dfOHLC[0])):
+        max_val = 2.5* float(dfOHLC[0][i]['High'].max())    
+        #round to nearest 10
+        #max_val = round(max_val, -1)
+
+        fig.add_trace(go.Scatter(x=dfOHLC[0][i]['Time'], y=dfOHLC[0][i]['Open'], mode='lines+markers', name=dfOHLC[0][i]['Time'][0].strftime('%Y-%m-%d') + ' ' + dfOHLC[0][i]['Open'][0], showlegend=False, fill = 'tozeroy'), row= i//2 + 1 , col=(i%2) +1)
+        fig.update_yaxes(range = [0, max_val],title_text='Open Price (GBP)', row= i//2 + 1, col=(i%2) +1)
+        fig.update_xaxes(title_text='Date and Time', row= i//2 + 1, col=(i%2) +1)
+        fig.update_layout(autotypenumbers='convert types')
+        #onhover show the asset name, date and close price
+        fig.update_traces(hovertemplate='Date: %{x}<br>Close Price: £%{y}')
+
+    fig.update_layout(height=1000, width=1000, title_text="Individual Assets", title_x=0.457)
+    fig.update_layout(showlegend=True)
+    fig.update_layout(margin=dict(l=5, r=5, t=30, b=5))
+    fig.print_grid()
+    st.plotly_chart(fig, use_container_width=True)
 
 

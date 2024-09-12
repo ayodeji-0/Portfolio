@@ -3,6 +3,8 @@ import streamlit as st
 #from streamlit_option_menu import option_menu
 from Home import create_navbar, grab_ohlc_data, ohlc_to_df, ohlcDict, possible_intervals, possible_timeframes, balancePairsDict, df
 
+
+st.write("Performance Page")
 # ## Page Selection Menu
 # selected = create_navbar("Performance 🎯")
 
