@@ -671,21 +671,25 @@ if __name__ == "__main__":
                 #st.text_area('',value=topMoversStr, height=30, )
                     with st.container(border=True):
                         st.write("Moves Today")
-                        st.markdown(f"""
-                                    <div style='background-color: #f0f0f0; color: black; padding: 10px; width: 100%; border-radius: 5px; box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);'>
-                                        <strong>{topMoversStr}</strong>
-                                    </div>
-                                    """, unsafe_allow_html=True)    
+                        moves_today_html = f"""
+                        <div style='background-color: #f0f0f0; color: black; padding: 10px; width: 100%; border-radius: 5px; box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);'>
+                            <strong>{topMoversStr}</strong>
+                        </div>
+                        """
+                        st.markdown(moves_today_html, unsafe_allow_html=True)   
                 with col2_2:
                     with st.container(border=True):
                         st.write("24h. Moves")
-                        st.markdown(f"""
-                                    <div style='background-color: #f0f0f0; color: black; padding: 10px; width: 100%; border-radius: 5px; box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);'>
-                                        <strong>{topMoversStrv24}</strong>
-                                    </div>
-                                    """, unsafe_allow_html=True)    
-            if "assetMovesCont" not in st.session_state:
-                st.session_state.assetMovesCont = assetMovesCont
+                        moves_24h_html = f"""
+                        <div style='background-color: #f0f0f0; color: black; padding: 10px; width: 100%; border-radius: 5px; box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);'>
+                             <strong>{topMoversStrv24}</strong>
+                        </div>
+                        """
+                        st.markdown(moves_24h_html, unsafe_allow_html=True) 
+            
+        # Store the HTML content in session state
+        st.session_state['moves_today_html'] = moves_today_html
+        st.session_state['moves_24h_html'] = moves_24h_html
 
 
 

@@ -89,16 +89,36 @@ st.markdown(
 )
 
 ## Tools Intro
-col1, col2 = st.columns([1, 3])
+with st.container(border=True):
+    col1, col2 = st.columns([1, 3])
 
-with col1:
-    st.markdown('## Tools 🛠️')
-    st.markdown("Welcome to the Tools page. Here you can analyse your portfolio using a variety of tools.")
+    with col1:
+        st.markdown('### Tools 🛠️')
+        st.markdown("Welcome to the Tools page. Here you can analyse your portfolio using a variety of tools.")
 
-    st.markdown("Drag and drop assets to the chart area, then select a tool to analyse your portfolio.")
+        st.markdown("Drag and drop assets to the chart area, then select a tool to analyse your portfolio.")
 
-with col2:
-    st.markdown("### Asset Moves")
+    with col2:
+        
+            # Check if the HTML content is stored in session state
+        if 'moves_today_html' in st.session_state and 'moves_24h_html' in st.session_state:
+            moves_today_html = st.session_state['moves_today_html']
+            moves_24h_html = st.session_state['moves_24h_html']
+
+            st.markdown(f"### Asset Moves")
+
+            col2_1, col2_2 = st.columns([1, 1])
+
+            with col2_1:
+                with st.container():
+                    st.write("Moves Today")
+                    st.markdown(moves_today_html, unsafe_allow_html=True)
+            with col2_2:
+                with st.container():
+                    st.write("24h. Moves")
+                    st.markdown(moves_24h_html, unsafe_allow_html=True)
+        else:
+            st.warning("No asset moves data available.")
 
     # st.comtainer = assetMovesCont
 ## Preliminary Data Processing
@@ -148,8 +168,9 @@ def updateBalancePairs(toolsDf, reset=False):
         ohlcDict = grab_ohlc_data(balancePairsDict.keys(), tenure)
         dfOHLC = ohlc_to_df(ohlcDict)
 
+
         
-        toolsDf.iat[assetCountOG, 2] = assetPrices.loc[assetPrices['Assets'] == toolsDf.iat[assetCountOG, 0], 'Value (GBP)'].values([0])
+        toolsDf.iat[assetCountOG, 2] = assetPrices.loc[assetPrices['Assets'] == toolsDf.iat[assetCountOG, 0], 'Value (GBP)'].values[0]
         toolsDf.iat[assetCountOG, 3] = toolsDf.iat[assetCountOG, 2] * toolsDf.iat[assetCountOG, 1]
 
 
@@ -159,6 +180,7 @@ def updateBalancePairs(toolsDf, reset=False):
             toolsDf.iat[asset, 4] = str(toolsDf.iat[asset, 4]) + "%"
 
     #st.write(toolsDf)
+    st.write(balancePairsDict)
     return balancePairsDict  # example ["BTCUSD": 1.0, "ETHUSD": 2.0, "ADAUSD": 3.0]
 
 
@@ -466,19 +488,25 @@ def updateChart(toolsDf, appliedTool, selectedChart, assetPlot):
 def updatePort(toolsDf):
     balancePairsDict = updateBalancePairs(toolsDf, reset=True)
     dfOHLC = ohlc_to_df(ohlcDict)
-    ogtoolsDf = toolsDf
+    if "ogtoolsDf" not in st.session_state:
+        ogtoolsDf = toolsDf
+        st.session_state["ogtoolsDf"] = ogtoolsDf
     #grab tools df by referencing sessions state key
     #update toolsDf data editor with new data through session state key
 
     #clear toolsDf cont
     toolsDfCont = st.empty()
 
-    toolsDf[:3] = ogtoolsDf
+    toolsDf.iloc[:3, :] = st.session_state.ogtoolsDf.iloc[:3, :]
 
     toolsDf = toolsDfCont.data_editor(toolsDf, hide_index=True, num_rows="dynamic", use_container_width=True, height=380,key= st.session_state.get("de_key", 0) + 1, on_change=updatePort(toolsDf))
     st.session_state["de_key"] = toolsDfCont.key
 
 def resetPort(toolsDf):
+    st.session_state.de_key = 0
+    updatePort(toolsDf)
+
+    return toolsDf
     # # Reset the dataframe, pie chart, and subplot area
     # st.session_state["de_key"] = 0
     # st.session_state["subplot"] = 0
@@ -504,10 +532,10 @@ def resetPort(toolsDf):
     # st.write(dfOHLC[1])
     # #restart the app
     # st.rerun()
-    st.session_state.toolsTenure += 1
+    #st.session_state.toolsTenure += 1
     # st.write(dfOHLC[0])
     # st.write(dfOHLC[1])
-@st.cache_data
+#@st.cache_data
 def allAssetPrices():
     url = "https://api.kraken.com/0/public/Ticker"
     response = requests.get(url)
@@ -596,7 +624,7 @@ if __name__ == "__main__":
 
         with toolsDfCont:
             toolsDf = st.data_editor(toolsDf, hide_index=True, num_rows="dynamic", use_container_width=True, height=460,key= st.session_state.de_key + 1)#, on_change=updatePort(toolsDf))
-            st.session_state["de_key"] += 1
+            #st.session_state["de_key"] += 1
             st.session_state["toolsDf"] = toolsDf
         st.divider()
 
