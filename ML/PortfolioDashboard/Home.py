@@ -29,6 +29,7 @@ import altair as alt
 import numpy as np
 import os
 
+from difflib import get_close_matches
 
 ## Streamlit Configuration
 st.markdown(
@@ -122,6 +123,9 @@ api_endpoints = {
     'Ledgers': '/0/private/Ledgers',
     'QueryLedgers': '/0/private/QueryLedgers',
     'TradeVolume': '/0/private/TradeVolume',
+    'TradesHistory': '/0/private/TradesHistory',
+    'OpenOrders': '/0/private/OpenOrders',
+
 }
 
 # Function to generate a nonce
@@ -180,7 +184,7 @@ def grab_all_assets():
     
     # Extract 'altname' for each asset pair
     altNames = [details['altname'] for details in assetPairs.values()]
-    return altNames# altNames is a list of all tradeable asset pairs on Kraken example: ['XXBTZUSD', 'XETHZUSD', 'XETHXXBT']
+    return altNames, assetPairs# altNames is a list of all tradeable asset pairs on Kraken example: ['XXBTZUSD', 'XETHZUSD', 'XETHXXBT']
 
 
 # Function to get the balance of all assets in the Kraken account with the given API keys
@@ -197,29 +201,21 @@ def grab_ext_bal():
         balanceDict[asset] = float(balance)
     return balanceDict # balanceDict is a dictionary with asset names as keys and balances as values example: {'XBT': 0.1, 'GBP': 1000}
 
+
+
+currList = ["GBP", "USD", "EUR"]
 @st.cache_resource
 def grab_clean_bal():
     balanceDict = grab_ext_bal()
     balanceDictPairs = {} # example: {'XXBTZUSD': 0.1, 'XETHZUSD': 0.2, 'XETHXXBT': 0.3}
-    # Clean asset names in balance dictionary by removing .f .s .p from the end of the asset name, rewards identified by these suffixes
-    #remove suffixes
-    for asset in list(balanceDict.keys()):
-        if asset[-2:] == '.F' or asset[-2:] == '.S' or asset[-2:] == '.P':
-            balanceDict[asset[:-2]] = balanceDict.pop(asset)
 
-    #add USD to asset names
     for asset in list(balanceDict.keys()):
         if asset[0] != 'Z':
-            new_asset = asset + "USD"
-        elif asset[0] == 'Z':
-            new_asset = asset + "ZUSD"
-        balanceDictPairs[new_asset] = balanceDict[asset]
-
-    #treat currency names as special cases
-    for asset in list(balanceDict.keys()):
-        if asset[-3:] == 'ZUSD':
-            balanceDict[asset[1:]] = balanceDict.pop(asset)
-
+            match = get_close_matches(asset + "USD", grab_all_assets()[0],n = 1)
+            balanceDictPairs[match[0]] = balanceDict[asset]
+        else:
+            balanceDict.pop(asset, None)
+    
     return (balanceDict,balanceDictPairs)
 
 
@@ -227,10 +223,16 @@ def grab_clean_bal():
 def grab_ticker_data(assetPairs):
     #example assetPairs = ['XXBTZUSD', 'XETHZUSD', 'XETHXXBT']
     tickerDict = {}
-    for assetPair in assetPairs:
-        resp = kraken_get_request(api_endpoints['Ticker'], {"pair": assetPair}).json()
-        tickerDict[assetPair] = resp['result'][assetPair]
 
+    resp = kraken_get_request(api_endpoints['Ticker']).json()
+
+    #st.write("EResp:",resp)
+    for assetPair in assetPairs:
+        if assetPair[:3] not in currList:
+            resp = kraken_get_request(api_endpoints['Ticker'], {"pair": assetPair}).json()
+            tickerDict[assetPair] = resp['result'][assetPair]
+        else:
+            continue
     return tickerDict # tickerDict is a dictionary with asset pairs as keys and ticker data as values example: {'XXBTZUSD': {'a': ['10000.0', '1', '1.000'], 'b': ['9999.0', '1', '1.000'], 'c': ['10000.5', '0.1'], 'v': ['100', '200'], 'p': ['10000.0', '10000.0'], 't': [100, 200], 'l': ['9999.0', '9999.0'], 'h': ['10000.0', '10000.0'], 'o': '10000.0'}}
 # Possible intervals: 1, 5, 15, 30, 60, 240, 1440, 10080, 21600 in minutes i.e., 1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, 4 hours, 1 day, 1 week, 1 month
 # Possible tenures: 1D (1440), 7D (10080), 1M (43200), 3M (129600), 6M (259200), 1Y (518400) - corresponding intervals are tenure/720 to maximize data points from a single request
@@ -250,12 +252,22 @@ def grab_ohlc_data(assetPairs,tenure):
     # Construct the Kraken API request and get the OHLC data for the given asset pairs, ohlc grabbing requires use of a temporary endpoint for the OHLC url
     ohlcDict = {}
     for assetPair in assetPairs:
-        if assetPair == 'ZGBPZUSD':
-            continue
-        resp = kraken_get_request(api_endpoints['OHLC'], {"pair": assetPair, "interval": interval, "since": since}).json()
-        ohlcDict[assetPair] = resp['result'][assetPair]
-
-    # To process the response, we need to extract the OHLC data from the response particularly the tick data array and the last timestamp
+        if assetPair[-3:] == 'USD':
+            if assetPair == 'USDTUSD' or assetPair == 'ZGBPZUSD':# or assetPair == 'ETCUSD':    
+                st.write("Skipping:", assetPair)
+                continue
+            st.write("X" + assetPair[:3] + "Z") 
+            matches = get_close_matches("X" + assetPair[:3] + "Z", list(ohlcDict.keys())[:3], n=1, cutoff = 0.6)
+            if matches:#and 'X' not in assetPair:
+                st.write(f"Asset: {assetPair} already in ohlcDict")
+                continue
+            resp = kraken_get_request(api_endpoints['OHLC'], {"pair": assetPair, "interval": interval, "since": since}).json()
+            if resp['error'] == KeyError:
+                st.write(resp)
+                #skip this asset pair
+                continue
+            ohlcDict[assetPair] = resp['result'][assetPair]
+        # To process the response, we need to extract the OHLC data from the response particularly the tick data array and the last timestamp
     # Append the OHLC data to a dataframe and return the dataframe with columns: Time, Open, High, Low, Close, Volume, Count, name it after the asset pair
     return ohlcDict
 
@@ -301,11 +313,24 @@ def ohlc_to_df(ohlcDict):
 
 # Function to grab multiple price types/points of an asset pair from a dictionary of asset pairs
 def grab_price(balancePairsDict, priceType, pricePoint=None):
-    tickerDict = grab_ticker_data(balancePairsDict.keys())
+    
     priceDict = {}
+    tickerDict = grab_ticker_data(balancePairsDict.keys())
+    # balancePairsDict.pop('USDTUSD', None)
+    # balancePairsDict.pop('ZGBPZUSD', None)
 
-    tickerDict.pop('ZGBPZUSD', None)
-    balancePairsDict.pop('ZGBPZUSD', None)
+    # tickerDict.pop('ZGBPZUSD', None)
+    
+
+    # tickerDict.pop('USDTUSD', None)
+
+
+    # #replace keys with closest matches from all assets
+    # for asset in list(balancePairsDict.keys()):
+    #     if asset not in list(grab_all_assets()):
+    #         continue
+    #         #st.write(asset)
+    
 
     if pricePoint is None:
         for assetPair in tickerDict.keys():
@@ -336,10 +361,14 @@ def grab_price(balancePairsDict, priceType, pricePoint=None):
     for asset in list(priceDict.keys()):
         if asset[0] == 'Z' and asset[-1] == 'Z':
             priceDict[asset[1:-1]] = priceDict.pop(asset)
+
     return priceDict
 
 def grab_assetValues(balanceDict):
     spotPriceDict = grab_price(balancePairsDict, 'spot')
+
+    # st.write(balanceDict)
+    # st.write(balancePairsDict)
     #grab rate as a global variable using todays gpbusd rate from kraken api
     
 
@@ -352,7 +381,6 @@ def grab_assetValues(balanceDict):
 
         else:# list(balanceDict.keys())[i] == 'GBP':
             assetValue.append(list(balanceDict.values())[i])
-
 
             
     return assetValue
@@ -426,34 +454,45 @@ def portValueOverTime(tenure):
 
 
     return
+def tradeHistory():
+    tradeHistory = kraken_request(api_endpoints['TradesHistory'], {"nonce": generate_nonce(),
+                                                                    "type": "all",
+                                                                    "trades": "true",
+                                                                    "ledgers": "false",
+    }, api_key, api_sec)
 
+    return tradeHistory
 def tradeBreakdown(portOtenure):
-        # sort ledger info by type, output list of dataframes for each type
-    st.write(portOtenure)
-    tradeTypes = portOtenure['type'].unique()
+    # sort ledgerInfo by type of asset into separate dfs for each asset
     tradeBreakdown = []
-    # for tradeType in tradeTypes:
-    #     tradeBreakdown.append(ledgerInfo[ledgerInfo['type'] == tradeType])
+    dfNames = []
 
-    # get number of dataframes in tradeBreakdown
-    numTrades = len(tradeBreakdown)
+    for asset in portOtenure['asset'].unique():
+        if asset[0] != 'Z':
+            tradeBreakdown.append(pd.DataFrame(portOtenure[portOtenure['asset'] == asset].iloc[:, :-1]))       
 
-    return tradeBreakdown, numTrades
 
-    return
+    for i in range(len(tradeBreakdown)):
+
+        for asset in tradeBreakdown[i]['asset']:
+            if get_close_matches(asset,dfNames,n=1) == []:
+                dfNames.append(asset)
+
+    return tradeBreakdown, dfNames
 
 def tradeQualRating():
     return
 
+def getOpenOrders():
+    openOrders = kraken_request(api_endpoints['OpenOrders'], {"nonce": generate_nonce()}, api_key, api_sec).json()
+    return openOrders
 
 ##Main Code
 
 # Grab the GBPUSD rate from the Kraken API
 rate = grab_rate()
 assetPairs = grab_all_assets()
-balanceDict = grab_clean_bal()[0]
-balancePairsDict = grab_clean_bal()[1]
-
+balanceDict, balancePairsDict = grab_clean_bal()
 #Sort balancePairsDict according to asset price in gbp, highest to lowest
 #balancePairsDict = dict(sorted(balancePairsDict.items(), key=lambda item: item[1]))#, reverse=True))
 #set window size for moving average smoothing    
@@ -487,15 +526,25 @@ ledgerInfo = queryLedgers(tenure, df['Value (£)'].iloc[-1])
 
 
 portOtenure = queryLedgers(tenure, df['Value (£)'].iloc[-1])[1]
-tradeBreakdown = tradeBreakdown(portOtenure)[0]
+tradeBreakdownList = tradeBreakdown(portOtenure)[0]
 
-for trade in tradeBreakdown:
+for trade in tradeBreakdownList:
     st.dataframe(trade, use_container_width=True)
+    #add summing row to amount balance and fees
+    # trade.loc['Total'] = trade.sum()
+
+openOrders = getOpenOrders()
+
+
+# for trade in tradeBreakdown:
+#     st.dataframe(trade, use_container_width=True)
 
 chartHeight = 100
 
-
-
+allOHLC = [assetPairs[0], [grab_ohlc_data(assetPairs[0], '1D')(-4), grab_ohlc_data(assetPairs[0], '7D'), grab_ohlc_data(assetPairs[0], '1M')]]#, grab_ohlc_data(assetPairs[0], '3M'), grab_ohlc_data(assetPairs[0], '6M'), grab_ohlc_data(assetPairs[0], '1Y')]
+#grab spot prices for all kraken assets for today, 24 hrs ago, 7 days ago and 30 days ago
+#allPrices = [asset, grab_ohlc_data()] # ["asset", [today, 24hrs ago, 7 days ago, 30 days ago]]
+st.write(allOHLC)
 
 if __name__ == "__main__":
     # This code will not run on import
@@ -670,7 +719,7 @@ if __name__ == "__main__":
                 with col2_1:
                 #st.text_area('',value=topMoversStr, height=30, )
                     with st.container(border=True):
-                        st.write("Moves Today")
+                        st.write("Today")
                         moves_today_html = f"""
                         <div style='background-color: #f0f0f0; color: black; padding: 10px; width: 100%; border-radius: 5px; box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);'>
                             <strong>{topMoversStr}</strong>
@@ -679,7 +728,7 @@ if __name__ == "__main__":
                         st.markdown(moves_today_html, unsafe_allow_html=True)   
                 with col2_2:
                     with st.container(border=True):
-                        st.write("24h. Moves")
+                        st.write("24h. Ago")
                         moves_24h_html = f"""
                         <div style='background-color: #f0f0f0; color: black; padding: 10px; width: 100%; border-radius: 5px; box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);'>
                              <strong>{topMoversStrv24}</strong>
@@ -767,3 +816,5 @@ if __name__ == "__main__":
 
     ### Data Manipulation for other pages
 
+
+    

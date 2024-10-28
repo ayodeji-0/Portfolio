@@ -32,6 +32,12 @@ import os
 
 from Home import grab_ohlc_data, ohlc_to_df, grab_price,rate, ohlcDict, possible_intervals, possible_timeframes, balancePairsDict, df, assetPairs
 #from nav import create_navbar
+
+
+
+
+##Todo List
+#1. Change min max values to be based on tenure selection not the entire data set
 ## Navbar
 
 # from nav import create_navbar as cn
@@ -98,6 +104,9 @@ with st.container(border=True):
 
         st.markdown("Drag and drop assets to the chart area, then select a tool to analyse your portfolio.")
 
+
+
+    #Asset Moves for the day and 24 hours ago
     with col2:
         
             # Check if the HTML content is stored in session state
@@ -107,15 +116,15 @@ with st.container(border=True):
 
             st.markdown(f"### Asset Moves")
 
-            col2_1, col2_2 = st.columns([1, 1])
+            col2_1, col2_2, col2_3 = st.columns([0.7, 0.7  ,1])
 
             with col2_1:
                 with st.container():
-                    st.write("Moves Today")
+                    st.write("Today")
                     st.markdown(moves_today_html, unsafe_allow_html=True)
             with col2_2:
                 with st.container():
-                    st.write("24h. Moves")
+                    st.write("24h. Ago")
                     st.markdown(moves_24h_html, unsafe_allow_html=True)
         else:
             st.warning("No asset moves data available.")
@@ -297,8 +306,8 @@ def updateChart(toolsDf, appliedTool, selectedChart, assetPlot):
                 #st.write("Bollinger Bands", bollingerdf)
 
                 # Create a new internal filled area trace for the bollinger bands
-                assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Upper Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='grey', name='Upper Band'), row=row, col=col+1)
-                assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Lower Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='grey', name='Lower Band'), row=row, col=col+1)
+                assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Upper Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='purple', name='Upper Band'), row=row, col=col+1)
+                assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Lower Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='yellow', name='Lower Band'), row=row, col=col+1)
 
                 assetPlot.update_yaxes(range = [min(bollingerdf['Lower Band']), max(bollingerdf['Upper Band'])], row=row, col=col+1)
             
@@ -409,7 +418,7 @@ def updateChart(toolsDf, appliedTool, selectedChart, assetPlot):
                 bollingerdf = process_quotes(quotes_list, 'Bollinger Bands')
 
                 # Create a new internal filled area trace for the Bollinger Bands
-                assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Upper Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='dimgray', name=f'{asset} Upper Band'), row=row, col=col)
+                assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Upper Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='purple', name=f'{asset} Upper Band'), row=row, col=col)
                 assetPlot.add_trace(go.Scatter(x=bollingerdf['Time'], y=bollingerdf['Lower Band'], fill='tonexty', mode='lines', line=dict(width=0), fillcolor='red', name=f'{asset} Lower Band'), row=row, col=col)
 
             elif appliedTool == 'MACD':
@@ -648,8 +657,10 @@ if __name__ == "__main__":
 
     # Sidebar for tools with assets, placeholder for top 15 assets for now, till i can get drag and drop working and api fetching for coinbase's top movers category
         with col1:
-            def update_pie_chart(df):
-                fig = px.pie(toolsDf, values='Value (£)', names='Asset (Crypto)', hole=0.6, height=500)
+            def update_pie_chart(toolsDf):
+                fig = px.pie(toolsDf, values='Value (£)', names='Asset (Crypto)', hole=0.6, height=500,color_discrete_sequence=px.colors.sequential.Viridis, 
+                            title=f"Assets in Portfolio")
+                fig.update_layout(title_x=0.288, title_y=0.48)#, color_discrete_sequence=px.colors.sequential.Viridis)
                 return fig
 
             fig = update_pie_chart(toolsDf)
@@ -759,8 +770,9 @@ if __name__ == "__main__":
                 assetPlot = updateChart(toolsDf, appliedTool, selectedCharts, assetPlot)
 
         with col1:
-            st.markdown("### Tool Description")
-            st.write(toolTips[appliedTool])
+            if appliedTool != 'Select Tool':
+                st.markdown("### Tool Description")
+                st.write(toolTips[appliedTool])
 
 
 

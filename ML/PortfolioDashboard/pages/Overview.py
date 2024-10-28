@@ -45,7 +45,13 @@ st.markdown(
                 """,
                 unsafe_allow_html=True,
             )
+## Overview Page
 
+st.markdown("Overview Page")
+
+st.markdown('## Overview 🧑‍💻')
+st.markdown("Welcome to the Overview page. This page provides an overview of your portfolio.")
+st.markdown("Here you can find information on the performance of your portfolio, as well as tools to help you make informed decisions.")
 
 ## Navigation Bar   
 # from nav import create_navbar as cn
@@ -63,18 +69,24 @@ st.markdown(
     
 # if st.button("Home"):
 #     st.switch_page('Home.py')
-
-## Page Title
-
 cont = st.container()
+## All Kraken Assets Scatter Plot
+
+#Scatter plot showing performance of all assets on Kraken
+# Axes are the % change in price over the last 24 hours and the % change in price over the last 7 days
+
 with cont:
-    st.markdown('## Overview 🧑‍💻')
-    st.markdown("Welcome to the Overview page. This page provides an overview of your portfolio.")
-    st.markdown("Here you can find information on the performance of your portfolio, as well as tools to help you make informed decisions.")
+    st.markdown("### All Kraken Assets Scatter Plot")
+    st.markdown("This scatter plot shows the performance of all assets on Kraken.")
+    st.markdown("The x-axis represents the % change in price over the last 24 hours, while the y-axis represents the % change in price over the last 7 days.")
+    st.markdown("The size of the points represents the market cap of the asset.")
+    st.markdown("Hover over the points to see the name of the asset.")
+    st.markdown("The color of the points represents the sector of the asset.")
+    st.markdown("Click on the legend to filter the assets by sector.")
+    st.markdown("Use the slider to filter the assets by market cap.")
+    st.markdown("Click on the points to see more information about the asset.")
 
-## Overview Page
-
-st.markdown("Overview Page")
+#     st.plotly_chart(fig)
 
 with cont:
     bullish = "images\candlestick-patterns-bullish.png"
