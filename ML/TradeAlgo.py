@@ -1,10 +1,8 @@
-# Trade Algorithms to automate trades using existing daily patterns
-# Only allowed short positions, i.e., selling first and buying later
-# Max. stop loss 7% of the initial investment, 
-# Max. take profit 14%-21% of the initial investment
-# Leading to a 2:1/3:1 risk-reward ratio dependent on the leverage multiple of the asset
-# Support and Resistance levels are calculated using an anticipated pct. change in the price
-# This pct. change is calculated against the existing trend of the asset over the last 5 days
+# Trade Algorithm to Automate Short Trades Using Daily Patterns
+# Only allowed short positions (selling first, buying later)
+# Max. stop loss 7% of initial investment
+# Max. take profit 14%-21% of initial investment (2:1/3:1 risk-reward ratio depending on leverage)
+# Support and Resistance levels calculated using anticipated pct. change in price over last 5 days
 
 # Import necessary libraries
 import numpy as np
@@ -15,16 +13,26 @@ import hashlib
 import hmac
 import base64
 import time
+import tensorflow as tf
+from sklearn.linear_model import LinearRegression
 
-# Simplified structure would be:
-# 1. Get the historical data of the asset(s), and other relevant data (leveraged multiple, etc.)
+# Key Considerations Added to Simplified Structure:
+# 1. Get historical data of the asset(s)
+# 1.1. Verify data quality and check for missing values/outliers.
+# 1.2. Account for trading volumes, volatility, and any specific asset-related adjustments.
+# 1.3. Pull leverage-related information.
 # 2. Calculate entry and exit points
-# 2.1 Calculate the anticipated pct. change in the price
-# 2.2 Calculate the support and resistance levels
-# 3 Risk Management
-# 3.1 Calculate the stop loss and take profit levels
-# 3.2 Calculate the position size to achieve the desired risk-reward ratio
-# 4. Execute the trade using REST API
+# 2.1. Calculate anticipated pct. change in the price over the last 5 trading days.
+# 2.2. Calculate support and resistance levels.
+# 2.3. Ensure support/resistance levels align with leverage and volatility.
+# 3. Risk Management
+# 3.1. Set stop loss (max 7%) and take profit (between 14%-21%) based on risk-reward ratio.
+# 3.2. Calculate position size that adheres to max stop loss and keeps total risk within acceptable boundaries.
+# 3.3. Take leverage into consideration when calculating actual exposure and risk.
+# 4. Execute the trade using Kraken REST API
+# 4.1. Set up connection with Kraken API (handle authentication).
+# 4.2. Monitor trade after execution for any trailing stop conditions or adjustments.
+# 4.3. Log trades, including entries, exits, wins, and losses for further analysis.
 
 # 1. Get Historical Data of the Asset(s)
 def get_historical_data(asset_symbol, start_date, end_date):
@@ -40,12 +48,32 @@ def get_historical_data(asset_symbol, start_date, end_date):
         raise Exception("Failed to get historical data")
 
 # 2. Calculate Entry and Exit Points
-# 2.1 Calculate anticipated percentage change in price (based on past 5-day trend)
+# 2.1 Calculate anticipated percentage change in price using Linear Regression or Neural Networks
 def calculate_anticipated_pct_change(data):
-    # Calculate 5-day rolling mean for trend analysis
-    data['5D_Avg'] = data['Close'].rolling(window=5).mean()
-    # Calculate anticipated percentage change in price
-    anticipated_pct_change = ((data['Close'] - data['5D_Avg']) / data['5D_Avg']).iloc[-1] * 100
+    # Using Linear Regression to Predict Percentage Change
+    model = LinearRegression()
+    data['Days'] = range(len(data))  # Add a column representing the number of days for fitting
+    X = data[['Days']]
+    y = data['Close']
+    model.fit(X, y)
+    predicted_price = model.predict([[len(data)]])[0]  # Predicting the next value
+    anticipated_pct_change = ((predicted_price - data['Close'].iloc[-1]) / data['Close'].iloc[-1]) * 100
+    
+    # Alternatively, using a simple Neural Network with TensorFlow
+    # Prepare data for Neural Network
+    features = np.array(data[['Days']])
+    target = np.array(data['Close'])
+    model_nn = tf.keras.Sequential([
+        tf.keras.layers.Dense(10, activation='relu', input_shape=(1,)),
+        tf.keras.layers.Dense(1)
+    ])
+    model_nn.compile(optimizer='adam', loss='mse')
+    model_nn.fit(features, target, epochs=100, verbose=0)
+    predicted_price_nn = model_nn.predict([[len(data)]])[0][0]
+    anticipated_pct_change_nn = ((predicted_price_nn - data['Close'].iloc[-1]) / data['Close'].iloc[-1]) * 100
+
+    # Combining the results from Linear Regression and Neural Network for better estimation
+    anticipated_pct_change = (anticipated_pct_change + anticipated_pct_change_nn) / 2
     return anticipated_pct_change
 
 # 2.2 Calculate support and resistance levels
