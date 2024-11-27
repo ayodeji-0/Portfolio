@@ -25,7 +25,7 @@ import plotly.express as px
 import plotly.io as pio
 import json
 import pandas as pd
-import altair as alt
+#import altair as alt
 import numpy as np
 import os
 
@@ -256,7 +256,7 @@ def grab_ohlc_data(assetPairs,tenure):
             if assetPair == 'USDTUSD' or assetPair == 'ZGBPZUSD':# or assetPair == 'ETCUSD':    
                 st.write("Skipping:", assetPair)
                 continue
-            st.write("X" + assetPair[:3] + "Z") 
+            #st.write("X" + assetPair[:3] + "Z") 
             matches = get_close_matches("X" + assetPair[:3] + "Z", list(ohlcDict.keys())[:3], n=1, cutoff = 0.6)
             if matches:#and 'X' not in assetPair:
                 st.write(f"Asset: {assetPair} already in ohlcDict")
