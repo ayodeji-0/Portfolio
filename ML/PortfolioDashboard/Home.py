@@ -506,7 +506,8 @@ openpriceDict = grab_price(balancePairsDict,'spot', 'open')
 
 
 # Grab overall portfolio value in GBP
-portValue = grab_assetValues(balancePairsDict)
+#portValue = grab_assetValues(balancePairsDict)
+portValue = None
 
 
 # Initialize dataframe with porfolio information
