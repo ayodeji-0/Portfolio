@@ -104,9 +104,9 @@ st.markdown("# Portfolio Dashboard 📊")
 
 ##
 
-# Read Kraken API key and secret stored in config   file
 api_url = "https://api.kraken.com"
 
+# Read Kraken API key and secret stored in config file
 api_key = cfg.api_key
 api_sec = cfg.api_priv
 
